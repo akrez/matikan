@@ -18,13 +18,21 @@ $config = [
     ],
     'components' => [
         'request' => [
+            'enableCsrfValidation' => false,
             'cookieValidationKey' => $params['cookieValidationKey'],
+        ],
+        'jdf' => [
+            'class' => 'app\components\jdf',
+        ],
+        'akrez' => [
+            'class' => 'app\components\akrez',
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
         'user' => [
             'identityClass' => 'app\models\User',
+            'enableSession' => false,
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -51,13 +59,17 @@ $config = [
         ],
         'response' => [
             'class' => Response::class,
-            'format' => Response::FORMAT_HTML,
+            'format' => Response::FORMAT_JSON,
             'charset' => 'UTF-8',
             'on beforeSend' => function ($event) {
-                if (in_array($event->sender->format, [Response::FORMAT_JSON, Response::FORMAT_JSONP, Response::FORMAT_XML])) {
-                    $code = $event->sender->statusCode;
-                    $event->sender->data = ( $code == 200 || YII_ENV_DEV ? (array) $event->sender->data : [] );
-                    $event->sender->data['code'] = $code;
+                $statusCode = $event->sender->statusCode;
+                if ($statusCode != 200 && !YII_DEBUG) {
+                    $event->sender->data = ['code' => $statusCode];
+                } elseif (isset($event->sender->data['code']) && !YII_DEBUG) {
+                    $event->sender->data = ['code' => $event->sender->data['code']];
+                } else {
+                    $event->sender->data = (array) $event->sender->data;
+                    $event->sender->data['code'] = $statusCode;
                 }
             },
         ],
