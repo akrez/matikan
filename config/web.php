@@ -21,12 +21,6 @@ $config = [
             'enableCsrfValidation' => false,
             'cookieValidationKey' => $params['cookieValidationKey'],
         ],
-        'jdf' => [
-            'class' => 'app\components\jdf',
-        ],
-        'akrez' => [
-            'class' => 'app\components\akrez',
-        ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
@@ -51,10 +45,15 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                '<controller:[\w\-]+>/<action:[\w\-]+>/<parent_id:\d+>/<id:\d+>' => '<controller>/<action>',
-                '<controller:[\w\-]+>/<action:[\w\-]+>/<parent_id:\d+>' => '<controller>/<action>',
-                '<controller:[\w\-]+>/<action:[\w\-]+>' => '<controller>/<action>',
-                '<controller:[\w\-]+>' => '<controller>/index',
+                '<module:(v1)>/<controller:[\w\-]+>/<action:[\w\-]+>/<parent_id:\d+>/<id:\d+>' => '<module>/<controller>/<action>',
+                '<module:(v1)>/<controller:[\w\-]+>/<action:[\w\-]+>/<id:\d+>' => '<module>/<controller>/<action>',
+                '<module:(v1)>/<controller:[\w\-]+>/<action:[\w\-]+>' => '<module>/<controller>/<action>',
+                '<module:(v1)>/<controller:[\w\-]+>' => '<module>/<controller>/index',
+                //
+                '<controller:\w+>/<action:\w+>/<parent_id:\d+>/<id:\d+>' => '<controller>/<action>',
+                '<controller:\w+>/<action:\w+>/<parent_id:\d+>' => '<controller>/<action>',
+                '<controller:\w+>/<action:\w+>' => '<controller>/<action>',
+                '<controller:\w+>' => '<controller>/index',
             ],
         ],
         'response' => [
@@ -72,6 +71,11 @@ $config = [
                     $event->sender->data['code'] = $statusCode;
                 }
             },
+        ],
+    ],
+    'modules' => [
+        'v1' => [
+            'class' => 'app\modules\v1\Module',
         ],
     ],
     'params' => $params,

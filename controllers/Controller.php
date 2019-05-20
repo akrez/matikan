@@ -4,7 +4,6 @@ namespace app\controllers;
 use Yii;
 use yii\web\Controller as BaseController;
 use yii\web\ForbiddenHttpException;
-use yii\web\Response;
 
 class Controller extends BaseController
 {

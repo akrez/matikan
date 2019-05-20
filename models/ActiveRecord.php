@@ -13,7 +13,7 @@ class ActiveRecord extends BaseActiveRecord
         if (!parent::beforeSave($insert)) {
             return false;
         }
-        $now = date('Y-m-d H:i:s');
+        $now = jdf::jdate('Y-m-d H:i:s');
         if ($this->isNewRecord) {
             if ($this->hasAttribute('created_at')) {
                 $this->created_at = $now;

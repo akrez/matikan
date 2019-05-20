@@ -5,7 +5,6 @@ use yii\base\Model as BaseModel;
 
 class Model extends BaseModel
 {
-
     public function attributeLabels()
     {
         return static::attributeLabelsList();
@@ -16,11 +15,18 @@ class Model extends BaseModel
         return [
             'id' => 'شناسه',
             'name' => 'نام',
+            'isbn' => 'ISBN',
+            'part' => 'جلد',
             'token' => 'Token',
             'email' => 'ایمیل',
+            'title' => 'عنوان',
+            'price' => 'قیمت',
+            'cover' => 'عکس',
             'status' => 'وضعیت',
             'avatar' => 'عکس',
             'gender' => 'جنسیت',
+            'writers' => 'نویسندگان',
+            'user_id' => 'کاربر',
             'password' => 'رمزعبور',
             'province' => 'استان',
             'username' => 'نام‌کاربری',
@@ -28,8 +34,11 @@ class Model extends BaseModel
             'birthdate' => 'تاریخ تولد',
             'updated_at' => 'تاریخ ویرایش',
             'created_at' => 'تاریخ ایجاد',
+            'publishers' => 'انتشارات',
             'reset_token' => 'Reset Token',
+            'translators' => 'مترجم',
             'password_hash' => 'Password Hash',
+            'publisher_year' => 'سال انتشار',
         ];
     }
 }
