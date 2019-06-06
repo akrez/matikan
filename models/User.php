@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\components\Helper;
 use app\components\jdf;
 use app\models\Users\ResetPassword;
 use app\models\Users\ResetPasswordRequest;
@@ -11,7 +12,6 @@ use Exception;
 use Yii;
 use yii\imagine\Image;
 use yii\web\IdentityInterface;
-use function dd;
 
 /**
  * This is the model class for table "user".
@@ -188,7 +188,7 @@ class User extends ActiveRecord implements IdentityInterface
             $signup = new Signup();
             $signup->password = $this->password;
             $signup->email = $this->email;
-            $signup->username = Yii::$app->akrez->generateRandomString(8);
+            $signup->username = Helper::generateRandomString(8);
             $signup->status = $status;
             $signup->setAuthKey();
             $signup->setPasswordHash($this->password);
