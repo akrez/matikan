@@ -5,7 +5,6 @@ use Yii;
 
 class Status extends Model
 {
-
     const STATUS_UNVERIFIED = 0;
     const STATUS_ACTIVE = 1;
     const STATUS_DISABLE = 2;

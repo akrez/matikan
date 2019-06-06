@@ -4,7 +4,6 @@ namespace app\models;
 
 class Province extends Model
 {
-
     public static function getList()
     {
         return [
@@ -47,5 +46,4 @@ class Province extends Model
         $list = self::statuses();
         return (isset($list[$item]) ? $list[$item] : null);
     }
-
 }

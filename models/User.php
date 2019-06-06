@@ -34,7 +34,6 @@ use yii\web\IdentityInterface;
  */
 class User extends ActiveRecord implements IdentityInterface
 {
-
     public $password;
     public $image;
 
@@ -49,10 +48,9 @@ class User extends ActiveRecord implements IdentityInterface
                 [['email'], 'email'],
                 [['username'], 'maxLenValidation', 'params' => ['max' => 16]],
                 [['password', 'username'], 'minLenValidation', 'params' => ['min' => 6]],
-                [['birthdate'], function($attribute, $params, $validator) {
+                [['birthdate'], function ($attribute, $params, $validator) {
                     $jdate = explode('-', $this->$attribute);
                     if (count($jdate) == 3 && jdf::jcheckdate($jdate[1], $jdate[2], $jdate[0])) {
-                        
                     } else {
                         $this->addError($attribute, Yii::t('yii', '{attribute} is invalid.', ['attribute' => $this->getAttributeLabel($attribute)]));
                     }
@@ -268,5 +266,4 @@ class User extends ActiveRecord implements IdentityInterface
             return null;
         }
     }
-
 }

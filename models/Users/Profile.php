@@ -9,12 +9,10 @@ use Yii;
 
 class Profile extends User
 {
-
     public function rules()
     {
         return [
 
         ];
     }
-
 }

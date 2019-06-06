@@ -4,7 +4,6 @@ namespace app\models\Users;
 
 class Signup extends Profile
 {
-
     public function rules()
     {
         return array_merge([
@@ -12,5 +11,4 @@ class Signup extends Profile
             [['username', 'email'], 'unique'],
         ], parent::rules());
     }
-
 }

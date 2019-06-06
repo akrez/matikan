@@ -35,7 +35,6 @@ use yii\imagine\Image;
  */
 class Post extends ActiveRecord
 {
-
     public $image;
 
     public static function tableName()

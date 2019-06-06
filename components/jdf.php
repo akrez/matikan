@@ -17,11 +17,12 @@ class jdf
     {
         $T_sec = 0; /* <= رفع خطاي زمان سرور ، با اعداد '+' و '-' بر حسب ثانيه */
         
-        if ($time_zone != 'local')
+        if ($time_zone != 'local') {
             date_default_timezone_set(($time_zone == '') ? 'Asia/Tehran' : $time_zone);
+        }
         $ts = $T_sec + (($timestamp == '' or $timestamp == 'now') ? time() : self::tr_num($timestamp));
         $date = explode('_', date('H_i_j_n_O_P_s_w_Y', $ts));
-        list ($j_y, $j_m, $j_d) = self::gregorian_to_jalali($date[8], $date[3], $date[2]);
+        list($j_y, $j_m, $j_d) = self::gregorian_to_jalali($date[8], $date[3], $date[2]);
         $doy = ($j_m < 7) ? (($j_m - 1) * 31) + $j_d - 1 : (($j_m - 7) * 30) + $j_d + 185;
         $kab = ($j_y % 33 % 4 - 1 == (int) ($j_y % 33 * .05)) ? 1 : 0;
         $sl = strlen($format);
@@ -221,8 +222,9 @@ class jdf
                 
                 case 'W':
                     $avs = (($date[7] == 6) ? 0 : $date[7] + 1) - ($doy % 7);
-                    if ($avs < 0)
+                    if ($avs < 0) {
                         $avs += 7;
+                    }
                     $num = (int) (($doy + $avs) / 7);
                     if ($avs < 4) {
                         $num ++;
@@ -230,8 +232,9 @@ class jdf
                         $num = ($avs == 4 or $avs == (($j_y % 33 % 4 - 2 == (int) ($j_y % 33 * .05)) ? 5 : 4)) ? 53 : 52;
                     }
                     $aks = $avs + $kab;
-                    if ($aks == 7)
+                    if ($aks == 7) {
                         $aks = 0;
+                    }
                     $out .= (($kab + 363 - $doy) < $aks and $aks < 3) ? '01' : (($num < 10) ? '0' . $num : $num);
                     break;
                 
@@ -259,11 +262,12 @@ class jdf
     {
         $T_sec = 0; /* <= رفع خطاي زمان سرور ، با اعداد '+' و '-' بر حسب ثانيه */
         
-        if ($time_zone != 'local')
+        if ($time_zone != 'local') {
             date_default_timezone_set(($time_zone == '') ? 'Asia/Tehran' : $time_zone);
+        }
         $ts = $T_sec + (($timestamp == '' or $timestamp == 'now') ? time() : self::tr_num($timestamp));
         $date = explode('_', date('h_H_i_j_n_s_w_Y', $ts));
-        list ($j_y, $j_m, $j_d) = self::gregorian_to_jalali($date[7], $date[4], $date[3]);
+        list($j_y, $j_m, $j_d) = self::gregorian_to_jalali($date[7], $date[4], $date[3]);
         $doy = ($j_m < 7) ? (($j_m - 1) * 31) + $j_d - 1 : (($j_m - 7) * 30) + $j_d + 185;
         $kab = ($j_y % 33 % 4 - 1 == (int) ($j_y % 33 * .05)) ? 1 : 0;
         $sl = strlen($format);
@@ -314,18 +318,21 @@ class jdf
                 /* Week */
                 case 'U':
                     $avs = (($date[6] < 5) ? $date[6] + 2 : $date[6] - 5) - ($doy % 7);
-                    if ($avs < 0)
+                    if ($avs < 0) {
                         $avs += 7;
+                    }
                     $num = (int) (($doy + $avs) / 7) + 1;
-                    if ($avs > 3 or $avs == 1)
+                    if ($avs > 3 or $avs == 1) {
                         $num --;
+                    }
                     $out .= ($num < 10) ? '0' . $num : $num;
                     break;
                 
                 case 'V':
                     $avs = (($date[6] == 6) ? 0 : $date[6] + 1) - ($doy % 7);
-                    if ($avs < 0)
+                    if ($avs < 0) {
                         $avs += 7;
+                    }
                     $num = (int) (($doy + $avs) / 7);
                     if ($avs < 4) {
                         $num ++;
@@ -333,18 +340,21 @@ class jdf
                         $num = ($avs == 4 or $avs == (($j_y % 33 % 4 - 2 == (int) ($j_y % 33 * .05)) ? 5 : 4)) ? 53 : 52;
                     }
                     $aks = $avs + $kab;
-                    if ($aks == 7)
+                    if ($aks == 7) {
                         $aks = 0;
+                    }
                     $out .= (($kab + 363 - $doy) < $aks and $aks < 3) ? '01' : (($num < 10) ? '0' . $num : $num);
                     break;
                 
                 case 'W':
                     $avs = (($date[6] == 6) ? 0 : $date[6] + 1) - ($doy % 7);
-                    if ($avs < 0)
+                    if ($avs < 0) {
                         $avs += 7;
+                    }
                     $num = (int) (($doy + $avs) / 7) + 1;
-                    if ($avs > 3)
+                    if ($avs > 3) {
                         $num --;
+                    }
                     $out .= ($num < 10) ? '0' . $num : $num;
                     break;
                 
@@ -501,7 +511,7 @@ class jdf
         if ($h == '' and $m == '' and $s == '' and $jm == '' and $jd == '' and $jy == '') {
             return mktime();
         } else {
-            list ($year, $month, $day) = self::jalali_to_gregorian($jy, $jm, $jd);
+            list($year, $month, $day) = self::jalali_to_gregorian($jy, $jm, $jd);
             return mktime($h, $m, $s, $month, $day, $year, $is_dst);
         }
     }
@@ -539,7 +549,7 @@ class jdf
     /* F */
     public static function tr_num($str, $mod = 'en', $mf = '٫')
     {
-	return $str;
+        return $str;
         $num_a = array(
             '0',
             '1',
@@ -820,8 +830,9 @@ class jdf
             334
         );
         $doy_g = $g_a[(int) $g_m] + $g_d;
-        if ($d_4 == 0 and $g_m > 2)
+        if ($d_4 == 0 and $g_m > 2) {
             $doy_g ++;
+        }
         $d_33 = (int) ((($g_y - 16) % 132) * .0305);
         $a = ($d_33 == 3 or $d_33 < ($d_4 - 1) or $d_4 == 0) ? 286 : 287;
         $b = (($d_33 == 1 or $d_33 == 2) and ($d_33 == $d_4 or $d_4 == 1)) ? 78 : (($d_33 == 3 and $d_4 == 0) ? 80 : 79);
@@ -888,8 +899,9 @@ class jdf
             30,
             31
         ) as $gm => $v) {
-            if ($gd <= $v)
+            if ($gd <= $v) {
                 break;
+            }
             $gd -= $v;
         }
         return ($mod == '') ? array(

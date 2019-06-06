@@ -10,7 +10,6 @@ use yii\web\UploadedFile;
 
 class SiteController extends Controller
 {
-
     public function behaviors()
     {
         $behaviors = [
@@ -142,5 +141,4 @@ class SiteController extends Controller
 
         return $user->info();
     }
-
 }

@@ -13,7 +13,6 @@ use yii\web\UploadedFile;
 
 class PostController extends Controller
 {
-
     public $modelClass = 'app\modules\v1\models\Post';
 
     public function behaviors()
