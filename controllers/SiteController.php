@@ -16,25 +16,25 @@ class SiteController extends Controller
             'authenticator' => [],
             'access' => [
                 'rules' => [
-                        [
+                    [
                         'actions' => ['error'],
                         'allow' => true,
                         'verbs' => ['POST', 'GET'],
                         'roles' => ['?', '@'],
                     ],
-                        [
+                    [
                         'actions' => ['signup', 'signin', 'reset-password-request', 'reset-password'],
                         'allow' => true,
                         'verbs' => ['POST'],
                         'roles' => ['?'],
                     ],
-                        [
+                    [
                         'actions' => ['profile'],
                         'allow' => true,
                         'verbs' => ['POST', 'GET'],
                         'roles' => ['@'],
                     ],
-                        [
+                    [
                         'actions' => ['signout'],
                         'allow' => true,
                         'verbs' => ['GET'],
@@ -141,4 +141,5 @@ class SiteController extends Controller
 
         return $user->info();
     }
+
 }

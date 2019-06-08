@@ -1,9 +1,6 @@
 <?php
 
 use yii\helpers\Html;
-use yii\widgets\Breadcrumbs;
-use app\assets\SiteAsset;
-use app\widgets\Alert;
 
 $this->title = ($this->title ? $this->title : Yii::$app->name);
 

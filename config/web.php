@@ -45,13 +45,11 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                '<module:(v1)>/<controller:[\w\-]+>/<action:[\w\-]+>/<parent_id:\d+>/<id:\d+>' => '<module>/<controller>/<action>',
                 '<module:(v1)>/<controller:[\w\-]+>/<action:[\w\-]+>/<id:\d+>' => '<module>/<controller>/<action>',
                 '<module:(v1)>/<controller:[\w\-]+>/<action:[\w\-]+>' => '<module>/<controller>/<action>',
                 '<module:(v1)>/<controller:[\w\-]+>' => '<module>/<controller>/index',
                 //
-                '<controller:\w+>/<action:\w+>/<parent_id:\d+>/<id:\d+>' => '<controller>/<action>',
-                '<controller:\w+>/<action:\w+>/<parent_id:\d+>' => '<controller>/<action>',
+                '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
                 '<controller:\w+>/<action:\w+>' => '<controller>/<action>',
                 '<controller:\w+>' => '<controller>/index',
             ],
