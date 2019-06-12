@@ -57,33 +57,29 @@ class SiteController extends Controller
 
     public function actionSignup()
     {
-        $inputModel = new User();
-        $inputModel->load(Yii::$app->request->post());
-
-        $signup = $inputModel->signup();
+        $signup = User::signup(Yii::$app->request->post());
         if ($signup == null) {
             throw new BadRequestHttpException();
         }
-
-        return $signup->info();
+        return [
+            'status' => !$signup->hasErrors(),
+            'User' => $signup->info(),
+            'errors' => $signup->errors,
+        ];
     }
 
     public function actionSignin()
     {
-        $inputModel = new User();
-        $inputModel->load(Yii::$app->request->post());
-
-        $signin = $inputModel->signin();
+        $signin = User::signin(Yii::$app->request->post());
         if ($signin == null) {
             throw new BadRequestHttpException();
         }
-
-        $user = $signin->getUser();
-
-        if ($signin->hasErrors() || $user == null) {
-            return $signin->info();
-        }
-        return $signin->info() + $user->info(true);
+        return [
+            'status' => !$signin->hasErrors(),
+            'User' => $signin->info(),
+            'Signin' => ($signin->getUser() ? $signin->getUser()->info(true) : null),
+            'errors' => $signin->errors,
+        ];
     }
 
     public function actionSignout()
@@ -96,50 +92,51 @@ class SiteController extends Controller
 
     public function actionResetPasswordRequest()
     {
-        $inputModel = new User();
-        $inputModel->load(Yii::$app->request->post());
-
-        $resetPasswordRequest = $inputModel->resetPasswordRequest();
+        $resetPasswordRequest = User::resetPasswordRequest(Yii::$app->request->post());
         if ($resetPasswordRequest == null) {
             throw new BadRequestHttpException();
         }
 
         return [
             'status' => !$resetPasswordRequest->hasErrors(),
-            $inputModel->formName() => $resetPasswordRequest->info(['username', 'category']),
+            'User' => $resetPasswordRequest->info(),
+            'errors' => $resetPasswordRequest->errors,
         ];
     }
 
     public function actionResetPassword()
     {
-        $inputModel = new User();
-        $inputModel->load(Yii::$app->request->post());
-
-        $resetPassword = $inputModel->resetPassword();
+        $resetPassword = User::resetPassword(Yii::$app->request->post());
         if ($resetPassword == null) {
             throw new BadRequestHttpException();
         }
 
         return [
             'status' => !$resetPassword->hasErrors(),
-            $inputModel->formName() => $resetPassword->info(['username', 'password', 'reset_token']),
+            'User' => $resetPassword->info(),
+            'errors' => $resetPassword->errors,
         ];
     }
 
     public function actionProfile()
     {
-        $user = Yii::$app->user->getIdentity();
-        if (!$user) {
+        $profile = Yii::$app->user->getIdentity();
+        if (!$profile) {
             throw new NotFoundHttpException();
         }
 
-        $user->setScenario('profile');
-        if ($user->load(Yii::$app->request->post())) {
-            $user->image = UploadedFile::getInstance($user, 'image');
-            $user->save();
+        if (Yii::$app->request->method == 'POST') {
+            $profile->profile(Yii::$app->request->post());
+            if ($profile == null) {
+                throw new BadRequestHttpException();
+            }
         }
 
-        return $user->info();
+        return [
+            'status' => !$profile->hasErrors(),
+            'User' => $profile->info(),
+            'errors' => $profile->errors,
+        ];
     }
 
 }

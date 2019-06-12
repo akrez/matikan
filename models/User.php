@@ -4,11 +4,9 @@ namespace app\models;
 
 use app\components\Helper;
 use app\components\jdf;
-use app\models\Users\ResetPassword;
-use app\models\Users\ResetPasswordRequest;
-use app\models\Users\Signin;
-use app\models\Users\Signup;
-use Exception;
+use app\models\Email;
+use yii\db\ActiveRecord;
+use yii\web\UploadedFile;
 use Yii;
 use yii\imagine\Image;
 use yii\web\IdentityInterface;
@@ -34,8 +32,12 @@ use yii\web\IdentityInterface;
  */
 class User extends ActiveRecord implements IdentityInterface
 {
+
+    const TIMEOUT_RESET = 120;
+
     public $password;
     public $image;
+    public $_user;
 
     public static function tableName()
     {
@@ -44,23 +46,77 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function rules()
     {
-        return [
-                [['email'], 'email'],
-                [['username'], 'maxLenValidation', 'params' => ['max' => 16]],
-                [['password', 'username'], 'minLenValidation', 'params' => ['min' => 6]],
-                [['birthdate'], function ($attribute, $params, $validator) {
-                    $jdate = explode('-', $this->$attribute);
-                    if (count($jdate) == 3 && jdf::jcheckdate($jdate[1], $jdate[2], $jdate[0])) {
-                    } else {
-                        $this->addError($attribute, Yii::t('yii', '{attribute} is invalid.', ['attribute' => $this->getAttributeLabel($attribute)]));
-                    }
-                }, 'on' => ['profile']],
-                [['name'], 'match', 'pattern' => "/^[\x{0600}-\x{06FF} a-z A-Z]{3,31}$/u", 'on' => ['profile']],
-                [['gender'], 'in', 'range' => array_keys(Gender::getList()), 'on' => ['profile']],
-                [['province'], 'in', 'range' => array_keys(Province::getList()), 'on' => ['profile']],
-                [['image'], 'file', 'extensions' => ['jpg', 'png'], 'maxSize' => 1024 * 1024, 'mimeTypes' => ['image/jpeg', 'image/png'], 'on' => ['profile']],
-                [['image'], 'uploadAvatarValidation', 'skipOnError' => true, 'on' => ['profile']],
+        $scenariosRules = [
+            'signup' => [
+                'email' => [['required'], ['unique'],],
+                '!username' => [['required'], ['unique'],],
+                'password' => [['required'],],
+            ],
+            'signin' => [
+                'email' => [['required']],
+                'password' => [['required'], ['passwordValidation']],
+            ],
+            'resetPasswordRequest' => [
+                'email' => [['required'], ['findValidUserByUsername']],
+            ],
+            'resetPassword' => [
+                'email' => [['required'], ['findValidUserByUsername']],
+                'password' => [['required']],
+                'reset_token' => [['required']],
+            ],
+            'profile' => [
+                'birthdate' => [],
+                'name' => [],
+                'gender' => [],
+                'province' => [],
+                'image' => [],
+            ]
         ];
+        $attributesRules = [
+            'reset_token' => [
+            ],
+            'email' => [
+                ['email'],
+            ],
+            'username' => [
+                ['minLenValidation', 'params' => ['min' => 6]],
+                ['maxLenValidation', 'params' => ['max' => 16]],
+            ],
+            'password' => [
+                ['minLenValidation', 'params' => ['min' => 6]],
+            ],
+            'birthdate' => [
+                ['birthdateValidation'],
+            ],
+            'name' => [
+                ['match', 'pattern' => "/^[\x{0600}-\x{06FF} a-z A-Z]{3,31}$/u"],
+            ],
+            'gender' => [
+                ['in', 'range' => array_keys(Gender::getList())],
+            ],
+            'province' => [
+                ['in', 'range' => array_keys(Province::getList())],
+            ],
+            'image' => [
+                ['file', 'extensions' => ['jpg', 'png'], 'maxSize' => 1024 * 1024, 'mimeTypes' => ['image/jpeg', 'image/png']],
+                ['uploadAvatarValidation', 'skipOnError' => true],
+            ],
+        ];
+
+        $rules = [];
+        foreach ($scenariosRules as $scenario => $scenarioAttributes) {
+            foreach ($scenarioAttributes as $attributeLabel => $scenarioRules) {
+                $attribute = ($attributeLabel[0] == '!' ? substr($attributeLabel, 1) : $attributeLabel);
+                foreach ($scenarioRules as $scenarioRule) {
+                    $rules[] = array_merge([[$attributeLabel]], $scenarioRule, ['on' => $scenario]);
+                }
+                foreach ($attributesRules[$attribute] as $attributeRule) {
+                    $rules[] = array_merge([[$attributeLabel]], $attributeRule, ['on' => $scenario]);
+                }
+            }
+        }
+
+        return $rules;
     }
 
     /////
@@ -91,6 +147,40 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /////
+
+    public function passwordValidation($attribute, $params)
+    {
+        if (!$this->hasErrors()) {
+            $user = User::findValidUserByEmail($this->email);
+            if ($user && $user->validatePassword($this->password)) {
+                return $this->_user = $user;
+            }
+            $this->addError($attribute, Yii::t('yii', '{attribute} is invalid.', ['attribute' => $this->getAttributeLabel($attribute)]));
+        }
+        return $this->_user = null;
+    }
+
+    public function findValidUserByUsername($attribute, $params)
+    {
+        if (!$this->hasErrors()) {
+            $user = User::findValidUserByEmail($this->email);
+            if ($user) {
+                return $this->_user = $user;
+            }
+            $this->addError($attribute, Yii::t('yii', '{attribute} is invalid.', ['attribute' => $this->getAttributeLabel($attribute)]));
+        }
+        return $this->_user = null;
+    }
+
+    public function birthdateValidation($attribute, $params, $validator)
+    {
+        $jdate = explode('-', $this->$attribute);
+        if (count($jdate) == 3 && jdf::jcheckdate($jdate[1], $jdate[2], $jdate[0])) {
+            
+        } else {
+            $this->addError($attribute, Yii::t('yii', '{attribute} is invalid.', ['attribute' => $this->getAttributeLabel($attribute)]));
+        }
+    }
 
     public function uploadAvatarValidation($attribute, $params, $validator)
     {
@@ -135,6 +225,14 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->token = Yii::$app->security->generateRandomString();
     }
 
+    public function setResetToken()
+    {
+        if (empty($this->reset_token) || time() - self::TIMEOUT_RESET > $this->reset_at) {
+            $this->reset_token = self::generateResetToken();
+        }
+        $this->reset_at = time();
+    }
+
     public static function findValidUserByEmail($email)
     {
         return self::find()->where(['status' => [Status::STATUS_UNVERIFIED, Status::STATUS_ACTIVE, Status::STATUS_DISABLE]])->andWhere(['email' => $email])->one();
@@ -156,57 +254,70 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function validatePassword($password)
     {
-        return \Yii::$app->security->validatePassword($password, $this->password_hash);
+        return Yii::$app->security->validatePassword($password, $this->password_hash);
+    }
+
+    public function getUser()
+    {
+        return $this->_user;
     }
 
     /////
 
     public function info($includeToken = false)
     {
-        $attributes = $this->attributes + ['password' => $this->password];
-        $errors = $this->errors;
-
-        $fields = ['id' => null, 'updated_at' => null, 'created_at' => null, 'status' => null, 'username' => null, 'email' => null, 'name' => null, 'province' => null, 'birthdate' => null, 'avatar' => null, 'gender' => null];
-        if ($includeToken) {
-            $fields['token'] = null;
-        }
-
-        return[
-            $this->formName() => [
-                'status' => empty($errors),
-                'attributes' => array_intersect_key($attributes, $fields),
-                'errors' => $errors,
-            ]
+        return [
+            'id' => $this->id,
+            'updated_at' => $this->updated_at,
+            'created_at' => $this->created_at,
+            'status' => $this->status,
+            'username' => $this->username,
+            'email' => $this->email,
+            'password' => $this->password,
+            'name' => $this->name,
+            'province' => $this->province,
+            'birthdate' => $this->birthdate,
+            'avatar' => $this->avatar,
+            'gender' => $this->gender,
+            'token' => ($includeToken ? $this->token : null),
         ];
     }
 
-    public function signup($status = Status::STATUS_UNVERIFIED)
+    public static function signup($input)
     {
         try {
-            $signup = new Signup();
-            $signup->password = $this->password;
-            $signup->email = $this->email;
+            $signup = new User(['scenario' => 'signup']);
+            $signup->load($input, '');
             $signup->username = Helper::generateRandomString(8);
-            $signup->status = $status;
+            $signup->status = Status::STATUS_UNVERIFIED;
             $signup->setAuthKey();
-            $signup->setPasswordHash($this->password);
+            $signup->setPasswordHash($signup->password);
             $signup->save();
             return $signup;
         } catch (Exception $e) {
-            dd($e->getMessage());
             return null;
         }
     }
 
-    public function signin()
+    public function profile($input)
     {
         try {
-            $signin = new Signin();
-            $signin->email = $this->email;
-            $signin->password = $this->password;
+            $this->setScenario('profile');
+            $this->load($input, '');
+            $this->image = UploadedFile::getInstanceByName('image');
+            $this->save();
+            return $this;
+        } catch (Exception $e) {
+            return null;
+        }
+    }
 
+    public static function signin($input)
+    {
+        try {
+            $signin = new User(['scenario' => 'signin']);
+            $signin->load($input, '');
             $signin->validate();
-
             return $signin;
         } catch (Exception $e) {
             return null;
@@ -223,20 +334,19 @@ class User extends ActiveRecord implements IdentityInterface
         }
     }
 
-    public function resetPasswordRequest()
+    public static function resetPasswordRequest($input)
     {
         try {
-            $resetPasswordRequest = new ResetPasswordRequest();
-            $resetPasswordRequest->username = $this->username;
+            $resetPasswordRequest = new User(['scenario' => 'resetPasswordRequest']);
+            $resetPasswordRequest->load($input, '');
             if ($resetPasswordRequest->validate()) {
                 $user = $resetPasswordRequest->getUser();
-                $user->reset_token = self::generateResetToken();
-                $user->reset_at = time();
-                if ($user->save()) {
-                    Email::resetPasswordRequest($user->email, $user);
-                    return $resetPasswordRequest;
+                $user->setResetToken();
+                if ($user->save(false)) {
+                    Email::resetPasswordRequest($user);
+                } else {
+                    return null;
                 }
-                return null;
             }
             return $resetPasswordRequest;
         } catch (Exception $e) {
@@ -244,19 +354,18 @@ class User extends ActiveRecord implements IdentityInterface
         }
     }
 
-    public function resetPassword()
+    public static function resetPassword($input)
     {
         try {
-            $resetPassword = new ResetPassword();
-            $resetPassword->username = $this->username;
-            $resetPassword->password = $this->password;
-            $resetPassword->reset_token = $this->reset_token;
+            $resetPassword = new User(['scenario' => 'resetPassword']);
+            $resetPassword->load($input, '');
             if ($resetPassword->validate()) {
                 $user = $resetPassword->getUser();
                 $user->reset_token = null;
                 $user->reset_at = null;
-                $user->setPasswordHash($this->password);
-                if ($user->save()) {
+                $user->status = Status::STATUS_ACTIVE;
+                $user->setPasswordHash($resetPassword->password);
+                if ($user->save(false)) {
                     return $resetPassword;
                 }
                 return null;
@@ -266,4 +375,5 @@ class User extends ActiveRecord implements IdentityInterface
             return null;
         }
     }
+
 }

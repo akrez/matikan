@@ -4,6 +4,7 @@ use yii\web\Response;
 
 $params = require(__DIR__ . '/params.php');
 $db = require(__DIR__ . '/db.php');
+$mailer = require(__DIR__ . '/mailer.php');
 
 $config = [
     'id' => 'basic',
@@ -41,6 +42,7 @@ $config = [
             'errorAction' => 'site/error',
         ],
         'db' => $db,
+        'mailer' => $mailer,
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
