@@ -5,7 +5,6 @@ namespace app\models;
 use app\components\Helper;
 use app\components\jdf;
 use app\models\Email;
-use yii\db\ActiveRecord;
 use yii\web\UploadedFile;
 use Yii;
 use yii\imagine\Image;

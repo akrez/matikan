@@ -47,9 +47,11 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                '<module:(v1)>/<controller:[\w\-]+>/<action:[\w\-]+>/<id:\d+>' => '<module>/<controller>/<action>',
-                '<module:(v1)>/<controller:[\w\-]+>/<action:[\w\-]+>' => '<module>/<controller>/<action>',
-                '<module:(v1)>/<controller:[\w\-]+>' => '<module>/<controller>/index',
+                'GET <module:(v1)>/<controller:[\w\-]+>' => '<module>/<controller>/index',
+                'POST <module:(v1)>/<controller:[\w\-]+>' => '<module>/<controller>/create',
+                'GET <module:(v1)>/<controller:[\w\-]+>/<id:\d+>' => '<module>/<controller>/view',
+                'POST <module:(v1)>/<controller:[\w\-]+>/<id:\d+>' => '<module>/<controller>/update',
+                'DELETE <module:(v1)>/<controller:[\w\-]+>/<id:\d+>' => '<module>/<controller>/delete',
                 //
                 '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
                 '<controller:\w+>/<action:\w+>' => '<controller>/<action>',

@@ -10,6 +10,7 @@ use yii\web\UploadedFile;
 
 class SiteController extends Controller
 {
+
     public function behaviors()
     {
         $behaviors = [
@@ -55,17 +56,22 @@ class SiteController extends Controller
         ];
     }
 
+    private function userResponseTemplate($model, $default = [])
+    {
+        return $default + [
+            'status' => !$model->hasErrors(),
+            'User' => $model->info(),
+            'errors' => $model->errors,
+        ];
+    }
+
     public function actionSignup()
     {
         $signup = User::signup(Yii::$app->request->post());
         if ($signup == null) {
             throw new BadRequestHttpException();
         }
-        return [
-            'status' => !$signup->hasErrors(),
-            'User' => $signup->info(),
-            'errors' => $signup->errors,
-        ];
+        return $this->userResponseTemplate($signup);
     }
 
     public function actionSignin()
@@ -74,20 +80,19 @@ class SiteController extends Controller
         if ($signin == null) {
             throw new BadRequestHttpException();
         }
-        return [
-            'status' => !$signin->hasErrors(),
-            'User' => $signin->info(),
-            'Signin' => ($signin->getUser() ? $signin->getUser()->info(true) : null),
-            'errors' => $signin->errors,
-        ];
+        return $this->userResponseTemplate($signin, [
+                    'User' => ($signin->getUser() ? $signin->getUser()->info(true) : $signin->info()),
+        ]);
     }
 
     public function actionSignout()
     {
-        $model = Yii::$app->user->getIdentity();
-        return [
-            'status' => $model && $model->signout(),
-        ];
+        $signout = Yii::$app->user->getIdentity();
+        return $this->userResponseTemplate($signout, [
+                    'status' => $signout && $signout->signout(),
+                    'User' => null,
+                    'errors' => [],
+        ]);
     }
 
     public function actionResetPasswordRequest()
@@ -96,12 +101,7 @@ class SiteController extends Controller
         if ($resetPasswordRequest == null) {
             throw new BadRequestHttpException();
         }
-
-        return [
-            'status' => !$resetPasswordRequest->hasErrors(),
-            'User' => $resetPasswordRequest->info(),
-            'errors' => $resetPasswordRequest->errors,
-        ];
+        return $this->userResponseTemplate($resetPasswordRequest);
     }
 
     public function actionResetPassword()
@@ -110,12 +110,7 @@ class SiteController extends Controller
         if ($resetPassword == null) {
             throw new BadRequestHttpException();
         }
-
-        return [
-            'status' => !$resetPassword->hasErrors(),
-            'User' => $resetPassword->info(),
-            'errors' => $resetPassword->errors,
-        ];
+        return $this->userResponseTemplate($resetPassword);
     }
 
     public function actionProfile()
@@ -124,19 +119,13 @@ class SiteController extends Controller
         if (!$profile) {
             throw new NotFoundHttpException();
         }
-
         if (Yii::$app->request->method == 'POST') {
             $profile->profile(Yii::$app->request->post());
             if ($profile == null) {
                 throw new BadRequestHttpException();
             }
         }
-
-        return [
-            'status' => !$profile->hasErrors(),
-            'User' => $profile->info(),
-            'errors' => $profile->errors,
-        ];
+        return $this->userResponseTemplate($profile);
     }
 
 }
