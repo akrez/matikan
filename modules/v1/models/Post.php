@@ -94,19 +94,6 @@ class Post extends ActiveRecord
         }
     }
 
-    public function info(array $fields = [], array $expand = [], $recursive = true)
-    {
-        $errors = $this->errors;
-
-        return [
-            $this->formName() => [
-                'status' => empty($errors),
-                'attributes' => parent::toArray($fields, $expand, $recursive),
-                'errors' => $errors,
-            ],
-        ];
-    }
-
     public function getUser()
     {
         return $this->hasOne(User::className(), ['id' => 'user_id']);

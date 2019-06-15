@@ -26,4 +26,13 @@ class Controller extends BaseController
         ];
         return array_merge_recursive(parent::behaviors(), $behaviors);
     }
+
+    public function response($model, $default = [])
+    {
+        return $default + [
+            'status' => !$model->hasErrors(),
+            $model->formName() => $model->toArray(),
+            'errors' => $model->errors,
+        ];
+    }
 }

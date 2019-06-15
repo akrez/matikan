@@ -103,15 +103,13 @@ class User extends ActiveRecord implements IdentityInterface
         ];
 
         $rules = [];
-        foreach ($scenariosRules as $scenario => $scenarioAttributes) {
-            foreach ($scenarioAttributes as $attributeLabel => $scenarioRules) {
-                $attribute = ($attributeLabel[0] == '!' ? substr($attributeLabel, 1) : $attributeLabel);
-                foreach ($scenarioRules as $scenarioRule) {
-                    $rules[] = array_merge([[$attributeLabel]], $scenarioRule, ['on' => $scenario]);
-                }
-                foreach ($attributesRules[$attribute] as $attributeRule) {
-                    $rules[] = array_merge([[$attributeLabel]], $attributeRule, ['on' => $scenario]);
-                }
+        foreach ($scenariosRules[$this->scenario] as $attributeLabel => $scenarioRules) {
+            $attribute = ($attributeLabel[0] == '!' ? substr($attributeLabel, 1) : $attributeLabel);
+            foreach ($scenarioRules as $scenarioRule) {
+                $rules[] = array_merge([[$attributeLabel]], $scenarioRule, ['on' => $scenario]);
+            }
+            foreach ($attributesRules[$attribute] as $attributeRule) {
+                $rules[] = array_merge([[$attributeLabel]], $attributeRule, ['on' => $scenario]);
             }
         }
 

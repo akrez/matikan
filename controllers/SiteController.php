@@ -56,7 +56,7 @@ class SiteController extends Controller
         ];
     }
 
-    private function userResponseTemplate($model, $default = [])
+    public function response($model, $default = [])
     {
         return $default + [
             'status' => !$model->hasErrors(),
@@ -71,7 +71,7 @@ class SiteController extends Controller
         if ($signup == null) {
             throw new BadRequestHttpException();
         }
-        return $this->userResponseTemplate($signup);
+        return $this->response($signup);
     }
 
     public function actionSignin()
@@ -80,7 +80,7 @@ class SiteController extends Controller
         if ($signin == null) {
             throw new BadRequestHttpException();
         }
-        return $this->userResponseTemplate($signin, [
+        return $this->response($signin, [
                     'User' => ($signin->getUser() ? $signin->getUser()->info(true) : $signin->info()),
         ]);
     }
@@ -88,7 +88,7 @@ class SiteController extends Controller
     public function actionSignout()
     {
         $signout = Yii::$app->user->getIdentity();
-        return $this->userResponseTemplate($signout, [
+        return $this->response($signout, [
                     'status' => $signout && $signout->signout(),
                     'User' => null,
                     'errors' => [],
@@ -101,7 +101,7 @@ class SiteController extends Controller
         if ($resetPasswordRequest == null) {
             throw new BadRequestHttpException();
         }
-        return $this->userResponseTemplate($resetPasswordRequest);
+        return $this->response($resetPasswordRequest);
     }
 
     public function actionResetPassword()
@@ -110,7 +110,7 @@ class SiteController extends Controller
         if ($resetPassword == null) {
             throw new BadRequestHttpException();
         }
-        return $this->userResponseTemplate($resetPassword);
+        return $this->response($resetPassword);
     }
 
     public function actionProfile()
@@ -125,7 +125,7 @@ class SiteController extends Controller
                 throw new BadRequestHttpException();
             }
         }
-        return $this->userResponseTemplate($profile);
+        return $this->response($profile);
     }
 
 }
