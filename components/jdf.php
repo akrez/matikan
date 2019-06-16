@@ -14,16 +14,16 @@ namespace app\components;
 class jdf
 {
     /*    F    */
-    public static function jdate($format, $timestamp = '', $none = '', $time_zone = 'Asia/Tehran', $tr_num = 'fa')
+    public static function jdate($format, $timestamp = '', $none = '', $time_zone = 'Asia/Tehran', $tr_num = 'en')
     {
         $T_sec = 0; /* <= رفع خطاي زمان سرور ، با اعداد '+' و '-' بر حسب ثانيه */
 
         if ($time_zone != 'local') {
             date_default_timezone_set(($time_zone === '') ? 'Asia/Tehran' : $time_zone);
         }
-        $ts = $T_sec + (($timestamp === '') ? time() : tr_num($timestamp));
+        $ts = $T_sec + (($timestamp === '') ? time() : self::tr_num($timestamp));
         $date = explode('_', date('H_i_j_n_O_P_s_w_Y', $ts));
-        list($j_y, $j_m, $j_d) = gregorian_to_jalali($date[8], $date[3], $date[2]);
+        list($j_y, $j_m, $j_d) = self::gregorian_to_jalali($date[8], $date[3], $date[2]);
         $doy = ($j_m < 7) ? (($j_m - 1) * 31) + $j_d - 1 : (($j_m - 7) * 30) + $j_d + 185;
         $kab = (((($j_y % 33) % 4) - 1) == ((int) (($j_y % 33) * 0.05))) ? 1 : 0;
         $sl = strlen($format);
@@ -71,15 +71,15 @@ class jdf
                     break;
 
                 case'D':
-                    $out .= jdate_words(array('kh' => $date[7]), ' ');
+                    $out .= self::jdate_words(array('kh' => $date[7]), ' ');
                     break;
 
                 case'f':
-                    $out .= jdate_words(array('ff' => $j_m), ' ');
+                    $out .= self::jdate_words(array('ff' => $j_m), ' ');
                     break;
 
                 case'F':
-                    $out .= jdate_words(array('mm' => $j_m), ' ');
+                    $out .= self::jdate_words(array('mm' => $j_m), ' ');
                     break;
 
                 case'H':
@@ -95,19 +95,19 @@ class jdf
                     break;
 
                 case'J':
-                    $out .= jdate_words(array('rr' => $j_d), ' ');
+                    $out .= self::jdate_words(array('rr' => $j_d), ' ');
                     break;
 
                 case'k':
-                    $out .= tr_num(100 - (int) ($doy / ($kab + 365) * 1000) / 10, $tr_num);
+                    $out .= self::tr_num(100 - (int) ($doy / ($kab + 365) * 1000) / 10, $tr_num);
                     break;
 
                 case'K':
-                    $out .= tr_num((int) ($doy / ($kab + 365) * 1000) / 10, $tr_num);
+                    $out .= self::tr_num((int) ($doy / ($kab + 365) * 1000) / 10, $tr_num);
                     break;
 
                 case'l':
-                    $out .= jdate_words(array('rh' => $date[7]), ' ');
+                    $out .= self::jdate_words(array('rh' => $date[7]), ' ');
                     break;
 
                 case'L':
@@ -119,7 +119,7 @@ class jdf
                     break;
 
                 case'M':
-                    $out .= jdate_words(array('km' => $j_m), ' ');
+                    $out .= self::jdate_words(array('km' => $j_m), ' ');
                     break;
 
                 case'n':
@@ -141,7 +141,7 @@ class jdf
                     break;
 
                 case'p':
-                    $out .= jdate_words(array('mb' => $j_m), ' ');
+                    $out .= self::jdate_words(array('mb' => $j_m), ' ');
                     break;
 
                 case'P':
@@ -149,7 +149,7 @@ class jdf
                     break;
 
                 case'q':
-                    $out .= jdate_words(array('sh' => $j_y), ' ');
+                    $out .= self::jdate_words(array('sh' => $j_y), ' ');
                     break;
 
                 case'Q':
@@ -157,7 +157,7 @@ class jdf
                     break;
 
                 case'r':
-                    $key = jdate_words(array('rh' => $date[7], 'mm' => $j_m));
+                    $key = self::jdate_words(array('rh' => $date[7], 'mm' => $j_m));
                     $out .= $date[0] . ':' . $date[1] . ':' . $date[6] . ' ' . $date[4] . ' ' . $key['rh'] . '، ' . $j_d . ' ' . $key['mm'] . ' ' . $j_y;
                     break;
 
@@ -178,11 +178,11 @@ class jdf
                     break;
 
                 case'v':
-                    $out .= jdate_words(array('ss' => ($j_y % 100)), ' ');
+                    $out .= self::jdate_words(array('ss' => ($j_y % 100)), ' ');
                     break;
 
                 case'V':
-                    $out .= jdate_words(array('ss' => $j_y), ' ');
+                    $out .= self::jdate_words(array('ss' => $j_y), ' ');
                     break;
 
                 case'w':
@@ -222,21 +222,21 @@ class jdf
                 default:$out .= $sub;
             }
         }
-        return($tr_num != 'en') ? tr_num($out, 'fa', '.') : $out;
+        return($tr_num != 'en') ? self::tr_num($out, 'fa', '.') : $out;
     }
 
     /*    F    */
 
-    public static function jstrftime($format, $timestamp = '', $none = '', $time_zone = 'Asia/Tehran', $tr_num = 'fa')
+    public static function jstrftime($format, $timestamp = '', $none = '', $time_zone = 'Asia/Tehran', $tr_num = 'en')
     {
         $T_sec = 0; /* <= رفع خطاي زمان سرور ، با اعداد '+' و '-' بر حسب ثانيه */
 
         if ($time_zone != 'local') {
             date_default_timezone_set(($time_zone === '') ? 'Asia/Tehran' : $time_zone);
         }
-        $ts = $T_sec + (($timestamp === '') ? time() : tr_num($timestamp));
+        $ts = $T_sec + (($timestamp === '') ? time() : self::tr_num($timestamp));
         $date = explode('_', date('h_H_i_j_n_s_w_Y', $ts));
-        list($j_y, $j_m, $j_d) = gregorian_to_jalali($date[7], $date[4], $date[3]);
+        list($j_y, $j_m, $j_d) = self::gregorian_to_jalali($date[7], $date[4], $date[3]);
         $doy = ($j_m < 7) ? (($j_m - 1) * 31) + $j_d - 1 : (($j_m - 7) * 30) + $j_d + 185;
         $kab = (((($j_y % 33) % 4) - 1) == ((int) (($j_y % 33) * 0.05))) ? 1 : 0;
         $sl = strlen($format);
@@ -253,11 +253,11 @@ class jdf
 
                 /* Day */
                 case'a':
-                    $out .= jdate_words(array('kh' => $date[6]), ' ');
+                    $out .= self::jdate_words(array('kh' => $date[6]), ' ');
                     break;
 
                 case'A':
-                    $out .= jdate_words(array('rh' => $date[6]), ' ');
+                    $out .= self::jdate_words(array('rh' => $date[6]), ' ');
                     break;
 
                 case'd':
@@ -326,11 +326,11 @@ class jdf
                 /* Month */
                 case'b':
                 case'h':
-                    $out .= jdate_words(array('km' => $j_m), ' ');
+                    $out .= self::jdate_words(array('km' => $j_m), ' ');
                     break;
 
                 case'B':
-                    $out .= jdate_words(array('mm' => $j_m), ' ');
+                    $out .= self::jdate_words(array('mm' => $j_m), ' ');
                     break;
 
                 case'm':
@@ -418,7 +418,7 @@ class jdf
 
                 /* Time and Date Stamps */
                 case'c':
-                    $key = jdate_words(array('rh' => $date[6], 'mm' => $j_m));
+                    $key = self::jdate_words(array('rh' => $date[6], 'mm' => $j_m));
                     $out .= $date[1] . ':' . $date[2] . ':' . $date[5] . ' ' . date('P', $ts) . ' ' . $key['rh'] . '، ' . $j_d . ' ' . $key['mm'] . ' ' . $j_y;
                     break;
 
@@ -454,7 +454,7 @@ class jdf
                 default:$out .= $sub;
             }
         }
-        return($tr_num != 'en') ? tr_num($out, 'fa', '.') : $out;
+        return($tr_num != 'en') ? self::tr_num($out, 'fa', '.') : $out;
     }
 
     /*    F    */
@@ -467,7 +467,7 @@ class jdf
         if ($h === '') {
             return time();
         } else {
-            list($h, $m, $s, $jm, $jd, $jy) = explode('_', tr_num($h . '_' . $m . '_' . $s . '_' . $jm . '_' . $jd . '_' . $jy));
+            list($h, $m, $s, $jm, $jd, $jy) = explode('_', self::tr_num($h . '_' . $m . '_' . $s . '_' . $jm . '_' . $jd . '_' . $jy));
             if ($m === '') {
                 return mktime($h);
             } else {
@@ -477,16 +477,16 @@ class jdf
                     if ($jm === '') {
                         return mktime($h, $m, $s);
                     } else {
-                        $jdate = explode('_', jdate('Y_j', '', '', $timezone, 'en'));
+                        $jdate = explode('_', self::jdate('Y_j', '', '', $timezone, 'en'));
                         if ($jd === '') {
-                            list($gy, $gm, $gd) = jalali_to_gregorian($jdate[0], $jm, $jdate[1]);
+                            list($gy, $gm, $gd) = self::jalali_to_gregorian($jdate[0], $jm, $jdate[1]);
                             return mktime($h, $m, $s, $gm);
                         } else {
                             if ($jy === '') {
-                                list($gy, $gm, $gd) = jalali_to_gregorian($jdate[0], $jm, $jd);
+                                list($gy, $gm, $gd) = self::jalali_to_gregorian($jdate[0], $jm, $jd);
                                 return mktime($h, $m, $s, $gm, $gd);
                             } else {
-                                list($gy, $gm, $gd) = jalali_to_gregorian($jy, $jm, $jd);
+                                list($gy, $gm, $gd) = self::jalali_to_gregorian($jy, $jm, $jd);
                                 return mktime($h, $m, $s, $gm, $gd, $gy);
                             }
                         }
@@ -500,11 +500,11 @@ class jdf
 
     public static function jgetdate($timestamp = '', $none = '', $timezone = 'Asia/Tehran', $tn = 'en')
     {
-        $ts = ($timestamp === '') ? time() : tr_num($timestamp);
-        $jdate = explode('_', jdate('F_G_i_j_l_n_s_w_Y_z', $ts, '', $timezone, $tn));
+        $ts = ($timestamp === '') ? time() : self::tr_num($timestamp);
+        $jdate = explode('_', self::jdate('F_G_i_j_l_n_s_w_Y_z', $ts, '', $timezone, $tn));
         return array(
-            'seconds' => tr_num((int) tr_num($jdate[6]), $tn),
-            'minutes' => tr_num((int) tr_num($jdate[2]), $tn),
+            'seconds' => self::tr_num((int) self::tr_num($jdate[6]), $tn),
+            'minutes' => self::tr_num((int) self::tr_num($jdate[2]), $tn),
             'hours' => $jdate[1],
             'mday' => $jdate[3],
             'wday' => $jdate[7],
@@ -513,7 +513,7 @@ class jdf
             'yday' => $jdate[9],
             'weekday' => $jdate[4],
             'month' => $jdate[0],
-            0 => tr_num($ts, $tn)
+            0 => self::tr_num($ts, $tn)
         );
     }
 
@@ -521,7 +521,7 @@ class jdf
 
     public static function jcheckdate($jm, $jd, $jy)
     {
-        list($jm, $jd, $jy) = explode('_', tr_num($jm . '_' . $jd . '_' . $jy));
+        list($jm, $jd, $jy) = explode('_', self::tr_num($jm . '_' . $jd . '_' . $jy));
         $l_d = ($jm == 12) ? ((((($jy % 33) % 4) - 1) == ((int) (($jy % 33) * 0.05))) ? 30 : 29) : 31 - (int) ($jm / 6.5);
         return($jm > 12 or $jd > $l_d or $jm < 1 or $jd < 1 or $jy < 1) ? false : true;
     }
@@ -540,7 +540,7 @@ class jdf
     public static function jdate_words($array, $mod = '')
     {
         foreach ($array as $type => $num) {
-            $num = (int) tr_num($num);
+            $num = (int) self::tr_num($num);
             switch ($type) {
 
                 case'ss':
@@ -619,7 +619,7 @@ class jdf
     /*    F    */
     public static function gregorian_to_jalali($gy, $gm, $gd, $mod = '')
     {
-        list($gy, $gm, $gd) = explode('_', tr_num($gy . '_' . $gm . '_' . $gd)); /* <= Extra :اين سطر ، جزء تابع اصلي نيست */
+        list($gy, $gm, $gd) = explode('_', self::tr_num($gy . '_' . $gm . '_' . $gd)); /* <= Extra :اين سطر ، جزء تابع اصلي نيست */
         $g_d_m = array(0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
         if ($gy > 1600) {
             $jy = 979;
@@ -652,7 +652,7 @@ class jdf
 
     public static function jalali_to_gregorian($jy, $jm, $jd, $mod = '')
     {
-        list($jy, $jm, $jd) = explode('_', tr_num($jy . '_' . $jm . '_' . $jd)); /* <= Extra :اين سطر ، جزء تابع اصلي نيست */
+        list($jy, $jm, $jd) = explode('_', self::tr_num($jy . '_' . $jm . '_' . $jd)); /* <= Extra :اين سطر ، جزء تابع اصلي نيست */
         if ($jy > 979) {
             $gy = 1600;
             $jy -= 979;
