@@ -94,11 +94,7 @@ class SiteController extends Controller
     public function actionSignout()
     {
         $signout = Yii::$app->user->getIdentity();
-        return $this->response($signout, [
-                    'status' => $signout && $signout->signout(),
-                    'User' => null,
-                    'errors' => [],
-        ]);
+        return ['status' => $signout && $signout->signout()];
     }
 
     public function actionResetPasswordRequest()
@@ -125,7 +121,7 @@ class SiteController extends Controller
         if (!$profile) {
             throw new NotFoundHttpException();
         }
-        $profile->profile(Yii::$app->request->post());
+        $profile = $profile->profile(Yii::$app->request->post());
         if ($profile == null) {
             throw new BadRequestHttpException();
         }

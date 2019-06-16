@@ -23,20 +23,16 @@ class SingleSort extends Component
         }
 
         if (empty($this->sort) || !isset($this->sortAttributes[$this->sort])) {
-            $sort = key($this->sortAttributes);
-        } else {
-            $sort = $this->sort;
+            $this->sort = key($this->sortAttributes);
         }
 
-        if ($sort[0] == '-') {
-            $order = SORT_DESC;
-            $attribute = substr($sort, 1);
+        if ($this->sort[0] == '-') {
+            $this->order = SORT_DESC;
+            $this->attribute = substr($this->sort, 1);
         } else {
-            $order = SORT_ASC;
-            $attribute = $sort;
+            $this->order = SORT_ASC;
+            $this->attribute = $this->sort;
         }
-
-        $this->order = $order;
-        $this->attribute = $attribute;
     }
+
 }
