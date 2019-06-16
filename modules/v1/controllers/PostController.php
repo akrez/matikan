@@ -1,19 +1,18 @@
 <?php
+
 namespace app\modules\v1\controllers;
 
+use app\components\SingleSort;
 use app\controllers\Controller;
 use app\models\Status;
 use Yii;
-use yii\data\ActiveDataProvider;
 use yii\data\Pagination;
-use app\components\SingleSort;
-use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 use yii\web\UploadedFile;
-use app\modules\v1\models\Post;
 
 class PostController extends Controller
 {
+
     public $modelClass = 'app\modules\v1\models\Post';
 
     public function behaviors()
@@ -45,6 +44,15 @@ class PostController extends Controller
         return array_merge_recursive(parent::behaviors(), $behaviors);
     }
 
+    public function response($model)
+    {
+        return [
+            'status' => !$model->hasErrors(),
+            'post' => $model->toArray(),
+            'errors' => $model->getErrors(),
+        ];
+    }
+
     public function actionIndex()
     {
         $page = Yii::$app->request->get('page');
@@ -54,12 +62,12 @@ class PostController extends Controller
         $countOfResults = $query->count('id');
 
         $sortAttributes = [
-            'id' => \Yii::t('app', 'id'),
-            '-id' => \Yii::t('app', 'id'),
-            'created_at' => \Yii::t('app', 'Created At'),
-            '-created_at' => \Yii::t('app', 'Created At'),
-            'title' => \Yii::t('app', 'Title'),
-            '-title' => \Yii::t('app', 'Title'),
+            '-id' => 'شناسه (نزولی)',
+            'id' => 'شناسه (صعودی)',
+            '-created_at' => 'جدید‌ترین',
+            'created_at' => 'قدیمی‌ترین',
+            '-title' => 'عنوان (نزولی)',
+            'title' => 'عنوان (صعودی)',
         ];
         $singleSort = new SingleSort([
             'sort' => $sort,
@@ -80,17 +88,18 @@ class PostController extends Controller
         }
 
         return [
-            'Posts' => $posts,
-            'Sort' => [
+            'posts' => $posts,
+            'sort' => [
                 'sort' => $singleSort->sort,
-                'sortAttributes' => $singleSort->sortAttributes,
+                'sort_attributes' => $singleSort->sortAttributes,
             ],
-            'Pagination' => [
+            'pagination' => [
                 'page_count' => $pagination->getPageCount(),
                 'page_size' => $pagination->getPageSize(),
                 'page' => $pagination->getPage(),
                 'total_count' => $countOfResults,
             ],
+            'status' => ($countOfResults > 0),
         ];
     }
 
@@ -117,7 +126,7 @@ class PostController extends Controller
     public function actionDelete($id)
     {
         $model = $this->findOne($id);
-        return $this->response($model, ['status' => boolval($model->delete()), 'Post' => null, 'errors' => []]);
+        return ['status' => boolval($model->delete())];
     }
 
     private function findOne($id)

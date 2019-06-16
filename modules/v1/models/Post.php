@@ -4,7 +4,6 @@ namespace app\modules\v1\models;
 use app\components\Helper;
 use app\components\jdf;
 use app\models\ActiveRecord;
-use app\models\Model;
 use app\models\Province;
 use app\models\Status;
 use app\models\User;
