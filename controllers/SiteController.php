@@ -32,7 +32,13 @@ class SiteController extends Controller
                     [
                         'actions' => ['profile'],
                         'allow' => true,
-                        'verbs' => ['POST', 'GET'],
+                        'verbs' => ['POST'],
+                        'roles' => ['@'],
+                    ],
+                    [
+                        'actions' => ['info'],
+                        'allow' => true,
+                        'verbs' => ['GET'],
                         'roles' => ['@'],
                     ],
                     [
@@ -119,11 +125,18 @@ class SiteController extends Controller
         if (!$profile) {
             throw new NotFoundHttpException();
         }
-        if (Yii::$app->request->method == 'POST') {
-            $profile->profile(Yii::$app->request->post());
-            if ($profile == null) {
-                throw new BadRequestHttpException();
-            }
+        $profile->profile(Yii::$app->request->post());
+        if ($profile == null) {
+            throw new BadRequestHttpException();
+        }
+        return $this->response($profile);
+    }
+
+    public function actionInfo()
+    {
+        $profile = Yii::$app->user->getIdentity();
+        if (!$profile) {
+            throw new NotFoundHttpException();
         }
         return $this->response($profile);
     }
