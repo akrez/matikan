@@ -262,25 +262,6 @@ class User extends ActiveRecord implements IdentityInterface
 
     /////
 
-    public function info($includeToken = false)
-    {
-        return [
-            'id' => $this->id,
-            'updated_at' => $this->updated_at,
-            'created_at' => $this->created_at,
-            'status' => $this->status,
-            'username' => $this->username,
-            'email' => $this->email,
-            'password' => $this->password,
-            'name' => $this->name,
-            'province' => $this->province,
-            'birthdate' => $this->birthdate,
-            'avatar' => $this->avatar,
-            'gender' => $this->gender,
-            'token' => ($includeToken ? $this->token : null),
-        ];
-    }
-
     public static function signup($input)
     {
         try {
@@ -326,7 +307,8 @@ class User extends ActiveRecord implements IdentityInterface
     {
         try {
             $this->setAuthKey();
-            return $this->save();
+            $this->save(false);
+            return $this;
         } catch (Exception $e) {
             return null;
         }
