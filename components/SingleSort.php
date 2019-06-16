@@ -6,7 +6,6 @@ use yii\base\Component;
 
 class SingleSort extends Component
 {
-
     public $sort;
     //
     public $defaultSort;
@@ -40,5 +39,4 @@ class SingleSort extends Component
         $this->order = $order;
         $this->attribute = $attribute;
     }
-
 }

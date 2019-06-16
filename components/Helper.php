@@ -7,7 +7,6 @@ use yii\base\Component;
 
 class Helper extends Component
 {
-
     public static function generateRandomString($length = 6)
     {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
@@ -37,5 +36,4 @@ class Helper extends Component
         }
         return implode(",", $arr);
     }
-
 }
