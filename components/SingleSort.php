@@ -24,9 +24,9 @@ class SingleSort extends Component
         }
 
         if (empty($this->sort) || !isset($this->sortAttributes[$this->sort])) {
-            $sort = $this->sort;
-        } else {
             $sort = key($this->sortAttributes);
+        } else {
+            $sort = $this->sort;
         }
 
         if ($sort[0] == '-') {
