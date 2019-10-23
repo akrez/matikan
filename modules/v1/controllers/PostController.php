@@ -17,31 +17,26 @@ class PostController extends Controller
 
     public function behaviors()
     {
-        $behaviors = [
-            'access' => [
-                'rules' => [
-                    [
-                        'actions' => ['index', 'view'],
-                        'allow' => true,
-                        'verbs' => ['GET'],
-                        'roles' => ['@'],
-                    ],
-                    [
-                        'actions' => ['create', 'update'],
-                        'allow' => true,
-                        'verbs' => ['POST'],
-                        'roles' => ['@'],
-                    ],
-                    [
-                        'actions' => ['delete'],
-                        'allow' => true,
-                        'verbs' => ['DELETE'],
-                        'roles' => ['@'],
-                    ],
-                ],
+        return self::defaultBehaviors([
+            [
+                'actions' => ['index', 'view'],
+                'allow' => true,
+                'verbs' => ['GET'],
+                'roles' => ['@'],
             ],
-        ];
-        return array_merge_recursive(parent::behaviors(), $behaviors);
+            [
+                'actions' => ['create', 'update'],
+                'allow' => true,
+                'verbs' => ['POST'],
+                'roles' => ['@'],
+            ],
+            [
+                'actions' => ['delete'],
+                'allow' => true,
+                'verbs' => ['DELETE'],
+                'roles' => ['@'],
+            ],
+        ]);
     }
 
     public function response($model)
