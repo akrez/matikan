@@ -6,7 +6,7 @@ $params = require(__DIR__ . '/params.php');
 $db = require(__DIR__ . '/db.php');
 $mailer = require(__DIR__ . '/mailer.php');
 
-$config = [
+return [
     'id' => 'basic',
     'name' => 'ماتیکان',
     'language' => 'fa-IR',
@@ -82,18 +82,3 @@ $config = [
     ],
     'params' => $params,
 ];
-
-if (YII_ENV_DEV) {
-    $config['bootstrap'][] = 'debug';
-    $config['modules']['debug'] = [
-        'class' => 'yii\debug\Module',
-        'allowedIPs' => ['127.0.0.1', '::1'],
-    ];
-    $config['bootstrap'][] = 'gii';
-    $config['modules']['gii'] = [
-        'class' => 'yii\gii\Module',
-        'allowedIPs' => ['127.0.0.1', '::1'],
-    ];
-}
-
-return $config;
