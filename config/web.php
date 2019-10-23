@@ -17,6 +17,11 @@ return [
         '@bower' => '@vendor/bower-asset',
         '@npm' => '@vendor/npm-asset',
     ],
+    'modules' => [
+        'v1' => [
+            'class' => 'app\modules\v1\Module',
+        ],
+    ],
     'components' => [
         'request' => [
             'enableCsrfValidation' => false,
@@ -40,6 +45,7 @@ return [
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
+            'view' => (YII_DEBUG ? '@yii/views/errorHandler/exception.php' : '@yii/views/errorHandler/error.php' ),
         ],
         'db' => $db,
         'mailer' => $mailer,
@@ -73,11 +79,6 @@ return [
                     $event->sender->data['code'] = $statusCode;
                 }
             },
-        ],
-    ],
-    'modules' => [
-        'v1' => [
-            'class' => 'app\modules\v1\Module',
         ],
     ],
     'params' => $params,
