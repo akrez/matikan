@@ -1,4 +1,5 @@
 <?php
+
 namespace app\controllers;
 
 use Yii;
@@ -7,11 +8,12 @@ use yii\web\ForbiddenHttpException;
 
 class Controller extends BaseController
 {
+
     const tokenParam = 'token';
 
-    public function behaviors()
+    public static function defaultBehaviors($rules = [])
     {
-        $behaviors = [
+        return [
             'authenticator' => [
                 'class' => 'yii\filters\auth\QueryParamAuth',
                 'tokenParam' => self::tokenParam,
@@ -19,11 +21,12 @@ class Controller extends BaseController
             ],
             'access' => [
                 'class' => 'yii\filters\AccessControl',
+                'rules' => $rules,
                 'denyCallback' => function ($rule, $action) {
                     throw new ForbiddenHttpException(Yii::t('yii', 'You are not allowed to perform this action.'));
                 }
             ],
         ];
-        return array_merge_recursive(parent::behaviors(), $behaviors);
     }
+
 }

@@ -12,31 +12,26 @@ class UserController extends Controller
 
     public function behaviors()
     {
-        $behaviors = [
-            'access' => [
-                'rules' => [
-                    [
-                        'actions' => ['signup', 'signin', 'reset-password-request', 'reset-password'],
-                        'allow' => true,
-                        'verbs' => ['POST'],
-                        'roles' => ['?'],
-                    ],
-                    [
-                        'actions' => ['profile'],
-                        'allow' => true,
-                        'verbs' => ['POST'],
-                        'roles' => ['@'],
-                    ],
-                    [
-                        'actions' => ['info', 'signout'],
-                        'allow' => true,
-                        'verbs' => ['GET'],
-                        'roles' => ['@'],
-                    ],
-                ],
-            ]
-        ];
-        return array_merge_recursive(parent::behaviors(), $behaviors);
+        return self::defaultBehaviors([
+            [
+                'actions' => ['signup', 'signin', 'reset-password-request', 'reset-password'],
+                'allow' => true,
+                'verbs' => ['POST'],
+                'roles' => ['?'],
+            ],
+            [
+                'actions' => ['profile'],
+                'allow' => true,
+                'verbs' => ['POST'],
+                'roles' => ['@'],
+            ],
+            [
+                'actions' => ['info', 'signout'],
+                'allow' => true,
+                'verbs' => ['GET'],
+                'roles' => ['@'],
+            ],
+        ]);
     }
 
     public function response($model, $includeToken = false)
