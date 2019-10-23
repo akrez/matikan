@@ -26,6 +26,7 @@ return [
         'request' => [
             'enableCsrfValidation' => false,
             'cookieValidationKey' => $params['cookieValidationKey'],
+            'baseUrl' => $params['baseUrl'],
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
@@ -45,13 +46,17 @@ return [
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
-            'view' => (YII_DEBUG ? '@yii/views/errorHandler/exception.php' : '@yii/views/errorHandler/error.php' ),
         ],
         'db' => $db,
         'mailer' => $mailer,
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
+            'normalizer' => [
+                'class' => 'yii\web\UrlNormalizer',
+                'collapseSlashes' => true,
+                'normalizeTrailingSlash' => true,
+            ],
             'rules' => [
                 'GET <module:(v1)>/<controller:[\w\-]+>' => '<module>/<controller>/index',
                 'POST <module:(v1)>/<controller:[\w\-]+>' => '<module>/<controller>/create',
