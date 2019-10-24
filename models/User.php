@@ -45,76 +45,46 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function rules()
     {
-        $scenariosRules = [
-            'signup' => [
-                'email' => [['required'], ['unique'],],
-                '!username' => [['required'], ['unique'],],
-                'password' => [['required'],],
-            ],
-            'signin' => [
-                'email' => [['required']],
-                'password' => [['required'], ['passwordValidation']],
-            ],
-            'resetPasswordRequest' => [
-                'email' => [['required'], ['findValidUserByUsername']],
-            ],
-            'resetPassword' => [
-                'email' => [['required'], ['findValidUserByUsername']],
-                'password' => [['required']],
-                'reset_token' => [['required']],
-            ],
-            'profile' => [
-                'birthdate' => [],
-                'name' => [],
-                'gender' => [],
-                'province' => [],
-                'image' => [],
-            ]
+        return [
+            [['email'], 'required', 'on' => 'signup'],
+            [['email'], 'unique', 'on' => 'signup'],
+            [['email'], 'email', 'on' => 'signup'],
+            [['!username'], 'required', 'on' => 'signup'],
+            [['!username'], 'unique', 'on' => 'signup'],
+            [['!username'], 'minLenValidation', 'params' => ['min' => 6], 'on' => 'signup'],
+            [['!username'], 'maxLenValidation', 'params' => ['max' => 16], 'on' => 'signup'],
+            [['password'], 'required', 'on' => 'signup'],
+            [['password'], 'minLenValidation', 'params' => ['min' => 6], 'on' => 'signup'],
+            [['email'], 'required', 'on' => 'signin'],
+            [['email'], 'email', 'on' => 'signin'],
+            [['password'], 'required', 'on' => 'signin'],
+            [['password'], 'passwordValidation', 'on' => 'signin'],
+            [['password'], 'minLenValidation', 'params' => ['min' => 6], 'on' => 'signin'],
+            [['email'], 'required', 'on' => 'resetPasswordRequest'],
+            [['email'], 'findValidUserByUsername', 'on' => 'resetPasswordRequest'],
+            [['email'], 'email', 'on' => 'resetPasswordRequest'],
+            [['email'], 'required', 'on' => 'resetPassword'],
+            [['email'], 'findValidUserByUsername', 'on' => 'resetPassword'],
+            [['email'], 'email', 'on' => 'resetPassword'],
+            [['password'], 'required', 'on' => 'resetPassword'],
+            [['password'], 'minLenValidation', 'params' => ['min' => 6], 'on' => 'resetPassword'],
+            [['reset_token'], 'required', 'on' => 'resetPassword'],
+            [['birthdate'], 'birthdateValidation', 'on' => 'profile'],
+            [['name'], 'match', 'pattern' => '/^[\x{0590}-\x{05ff}\x{0600}-\x{06ff} a-z A-Z]{3,31}$/u', 'on' => 'profile'],
+            [['gender'], 'in', 'range' => array_keys(Gender::getList()), 'on' => 'profile'],
+            [['province'], 'in', 'range' => array_keys(Province::getList()), 'on' => 'profile'],
+            [['image'], 'file', 'extensions' => ['jpg', 'png'], 'maxSize' => 1048576, 'mimeTypes' => ['image/jpeg', 'image/png'], 'on' => 'profile'],
+            [['image'], 'uploadAvatarValidation', 'skipOnError' => true, 'on' => 'profile'],
         ];
-        $attributesRules = [
-            'reset_token' => [
-            ],
-            'email' => [
-                ['email'],
-            ],
-            'username' => [
-                ['minLenValidation', 'params' => ['min' => 6]],
-                ['maxLenValidation', 'params' => ['max' => 16]],
-            ],
-            'password' => [
-                ['minLenValidation', 'params' => ['min' => 6]],
-            ],
-            'birthdate' => [
-                ['birthdateValidation'],
-            ],
-            'name' => [
-                ['match', 'pattern' => "/^[\x{0600}-\x{06FF} a-z A-Z]{3,31}$/u"],
-            ],
-            'gender' => [
-                ['in', 'range' => array_keys(Gender::getList())],
-            ],
-            'province' => [
-                ['in', 'range' => array_keys(Province::getList())],
-            ],
-            'image' => [
-                ['file', 'extensions' => ['jpg', 'png'], 'maxSize' => 1024 * 1024, 'mimeTypes' => ['image/jpeg', 'image/png']],
-                ['uploadAvatarValidation', 'skipOnError' => true],
-            ],
-        ];
+    }
 
-        $rules = [];
-        $scenario = $this->getScenario();
-        foreach ($scenariosRules[$scenario] as $attributeLabel => $scenarioRules) {
-            $attribute = ($attributeLabel[0] == '!' ? substr($attributeLabel, 1) : $attributeLabel);
-            foreach ($scenarioRules as $scenarioRule) {
-                $rules[] = array_merge([[$attributeLabel]], $scenarioRule, ['on' => $scenario]);
-            }
-            foreach ($attributesRules[$attribute] as $attributeRule) {
-                $rules[] = array_merge([[$attributeLabel]], $attributeRule, ['on' => $scenario]);
-            }
+    public function beforeValidate()
+    {
+        if (!parent::beforeValidate()) {
+            return false;
         }
-
-        return $rules;
+        $this->email = Helper::normalizeEmail($this->email);
+        return true;
     }
 
     /////
@@ -126,7 +96,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        return static::find()->where(['token' => $token])->andWhere(['status' => [Status::STATUS_UNVERIFIED, Status::STATUS_ACTIVE, Status::STATUS_DISABLE]])->one();
+        return static::find()->where('BINARY `token` in(:token)', ['token'=> $token])->andWhere(['status' => [Status::STATUS_UNVERIFIED, Status::STATUS_ACTIVE, Status::STATUS_DISABLE]])->one();
     }
 
     public function getId()

@@ -2,11 +2,31 @@
 
 namespace app\components;
 
-use Yii;
+use yii\helpers\VarDumper;
 use yii\base\Component;
 
 class Helper extends Component
 {
+
+    public static function rulesDumper($scenariosRules, $attributesRules)
+    {
+        $rules = [];
+        foreach ($scenariosRules as $scenario => $scenarioAttributesRules) {
+            foreach ($scenarioAttributesRules as $attributeLabel => $scenarioRules) {
+                $attribute = ($attributeLabel[0] == '!' ? substr($attributeLabel, 1) : $attributeLabel);
+                foreach ($scenarioRules as $scenarioRule) {
+                    $rules[] = array_merge([[$attributeLabel]], $scenarioRule, ['on' => $scenario]);
+                }
+                if (isset($attributesRules[$attribute])) {
+                    foreach ($attributesRules[$attribute] as $attributeRule) {
+                        $rules[] = array_merge([[$attributeLabel]], $attributeRule, ['on' => $scenario]);
+                    }
+                }
+            }
+        }
+        return VarDumper::export($rules);
+    }
+
     public static function generateRandomString($length = 6)
     {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
@@ -36,4 +56,12 @@ class Helper extends Component
         }
         return implode(",", $arr);
     }
+
+    public function normalizeEmail($email)
+    {
+        $email = explode('@', $email);
+        $email[0] = str_replace('.', '', $email[0]);
+        return implode('@', $email);
+    }
+
 }
