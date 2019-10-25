@@ -11,8 +11,6 @@ class SiteController extends Controller
                     [
                         'actions' => ['error'],
                         'allow' => true,
-                        'verbs' => ['POST', 'GET'],
-                        'roles' => ['?', '@'],
                     ],
         ]);
     }
@@ -27,4 +25,4 @@ class SiteController extends Controller
         ];
     }
 
-}
+    }

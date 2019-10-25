@@ -46,6 +46,7 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
+            //signup
             [['email'], 'required', 'on' => 'signup'],
             [['email'], 'unique', 'on' => 'signup'],
             [['email'], 'email', 'on' => 'signup'],
@@ -55,20 +56,24 @@ class User extends ActiveRecord implements IdentityInterface
             [['!username'], 'maxLenValidation', 'params' => ['max' => 16], 'on' => 'signup'],
             [['password'], 'required', 'on' => 'signup'],
             [['password'], 'minLenValidation', 'params' => ['min' => 6], 'on' => 'signup'],
+            //signin
             [['email'], 'required', 'on' => 'signin'],
             [['email'], 'email', 'on' => 'signin'],
             [['password'], 'required', 'on' => 'signin'],
             [['password'], 'passwordValidation', 'on' => 'signin'],
             [['password'], 'minLenValidation', 'params' => ['min' => 6], 'on' => 'signin'],
+            //resetPasswordRequest
             [['email'], 'required', 'on' => 'resetPasswordRequest'],
             [['email'], 'findValidUserByUsername', 'on' => 'resetPasswordRequest'],
             [['email'], 'email', 'on' => 'resetPasswordRequest'],
+            //resetPassword
             [['email'], 'required', 'on' => 'resetPassword'],
             [['email'], 'findValidUserByUsername', 'on' => 'resetPassword'],
             [['email'], 'email', 'on' => 'resetPassword'],
             [['password'], 'required', 'on' => 'resetPassword'],
             [['password'], 'minLenValidation', 'params' => ['min' => 6], 'on' => 'resetPassword'],
             [['reset_token'], 'required', 'on' => 'resetPassword'],
+            //profile
             [['birthdate'], 'birthdateValidation', 'on' => 'profile'],
             [['name'], 'match', 'pattern' => '/^[\x{0590}-\x{05ff}\x{0600}-\x{06ff} a-z A-Z]{3,31}$/u', 'on' => 'profile'],
             [['gender'], 'in', 'range' => array_keys(Gender::getList()), 'on' => 'profile'],

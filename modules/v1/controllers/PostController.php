@@ -9,43 +9,33 @@ use Yii;
 use yii\data\Pagination;
 use yii\web\NotFoundHttpException;
 use yii\web\UploadedFile;
+use app\modules\v1\models\Post;
 
 class PostController extends Controller
 {
 
-    public $modelClass = 'app\modules\v1\models\Post';
-
     public function behaviors()
     {
         return self::defaultBehaviors([
-            [
-                'actions' => ['index', 'view'],
-                'allow' => true,
-                'verbs' => ['GET'],
-                'roles' => ['@'],
-            ],
-            [
-                'actions' => ['create', 'update'],
-                'allow' => true,
-                'verbs' => ['POST'],
-                'roles' => ['@'],
-            ],
-            [
-                'actions' => ['delete'],
-                'allow' => true,
-                'verbs' => ['DELETE'],
-                'roles' => ['@'],
-            ],
+                    [
+                        'actions' => ['index', 'view'],
+                        'allow' => true,
+                        'verbs' => ['GET'],
+                        'roles' => ['@'],
+                    ],
+                    [
+                        'actions' => ['create', 'update'],
+                        'allow' => true,
+                        'verbs' => ['POST'],
+                        'roles' => ['@'],
+                    ],
+                    [
+                        'actions' => ['delete'],
+                        'allow' => true,
+                        'verbs' => ['DELETE'],
+                        'roles' => ['@'],
+                    ],
         ]);
-    }
-
-    public function response($model)
-    {
-        return [
-            'status' => !$model->hasErrors(),
-            'post' => $model->toArray(),
-            'errors' => $model->getErrors(),
-        ];
     }
 
     public function actionIndex()
@@ -53,20 +43,19 @@ class PostController extends Controller
         $page = Yii::$app->request->get('page');
         $sort = Yii::$app->request->get('sort');
 
-        $query = (new $this->modelClass)::find()->where(['user_id' => Yii::$app->user->getId()])->andWhere(['status' => [Status::STATUS_UNVERIFIED, Status::STATUS_ACTIVE, Status::STATUS_DISABLE]]);
+        $query = self::findQuery();
         $countOfResults = $query->count('id');
 
-        $sortAttributes = [
-            '-id' => 'شناسه (نزولی)',
-            'id' => 'شناسه (صعودی)',
-            '-created_at' => 'جدید‌ترین',
-            'created_at' => 'قدیمی‌ترین',
-            '-title' => 'عنوان (نزولی)',
-            'title' => 'عنوان (صعودی)',
-        ];
         $singleSort = new SingleSort([
             'sort' => $sort,
-            'sortAttributes' => $sortAttributes,
+            'sortAttributes' => [
+                '-id' => 'شناسه (نزولی)',
+                'id' => 'شناسه (صعودی)',
+                '-created_at' => 'جدید‌ترین',
+                'created_at' => 'قدیمی‌ترین',
+                '-title' => 'عنوان (نزولی)',
+                'title' => 'عنوان (صعودی)',
+            ],
         ]);
 
         $pagination = new Pagination([
@@ -79,7 +68,12 @@ class PostController extends Controller
 
         $posts = [];
         if ($countOfResults > 0) {
-            $posts = $query->orderBy([$singleSort->attribute => $singleSort->order])->offset($pagination->offset)->limit($pagination->limit)->asArray()->all();
+            $posts = $query
+                    ->orderBy([$singleSort->attribute => $singleSort->order])
+                    ->offset($pagination->offset)
+                    ->limit($pagination->limit)
+                    ->asArray()
+                    ->all();
         }
 
         return [
@@ -94,13 +88,13 @@ class PostController extends Controller
                 'page' => $pagination->getPage(),
                 'total_count' => $countOfResults,
             ],
-            'status' => ($countOfResults > 0),
+            'status' => boolval($countOfResults > 0),
         ];
     }
 
     public function actionCreate()
     {
-        $model = (new $this->modelClass);
+        $model = new Post();
         $this->handleOne($model);
         return $this->response($model);
     }
@@ -124,14 +118,30 @@ class PostController extends Controller
         return ['status' => boolval($model->delete())];
     }
 
+    public function response($model)
+    {
+        return [
+            'status' => boolval(!$model->hasErrors()),
+            'post' => $model->toArray(),
+            'errors' => $model->getErrors(),
+        ];
+    }
+
+    private static function findQuery()
+    {
+        return Post::find()->where('AND', [
+                    'user_id' => Yii::$app->user->getId(),
+                    'status' => [Status::STATUS_UNVERIFIED, Status::STATUS_ACTIVE, Status::STATUS_DISABLE, Status::STATUS_DELETED],
+        ]);
+    }
+
     private function findOne($id)
     {
-        $modelClass = (new $this->modelClass);
-        $model = $modelClass::find()->where(['AND', ['id' => $id, 'status' => [Status::STATUS_UNVERIFIED, Status::STATUS_ACTIVE, Status::STATUS_DISABLE]], ['user_id' => Yii::$app->user->getId()]])->one();
-        if (!$model) {
-            throw new NotFoundHttpException(Yii::t('yii', 'Page not found.'));
+        $model = self::findQuery()->andWhere(['id' => $id])->one();
+        if ($model) {
+            return $model;
         }
-        return $model;
+        throw new NotFoundHttpException(Yii::t('yii', 'Page not found.'));
     }
 
     private function handleOne($model)
