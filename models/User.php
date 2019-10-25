@@ -3,7 +3,7 @@
 namespace app\models;
 
 use app\components\Helper;
-use app\components\jdf;
+use app\components\Jdf;
 use app\models\Email;
 use yii\web\UploadedFile;
 use Yii;
@@ -148,7 +148,7 @@ class User extends ActiveRecord implements IdentityInterface
     public function birthdateValidation($attribute, $params, $validator)
     {
         $jdate = explode('-', $this->$attribute);
-        if (count($jdate) == 3 && jdf::jcheckdate($jdate[1], $jdate[2], $jdate[0])) {
+        if (count($jdate) == 3 && Jdf::jcheckdate($jdate[1], $jdate[2], $jdate[0])) {
             
         } else {
             $this->addError($attribute, Yii::t('yii', '{attribute} is invalid.', ['attribute' => $this->getAttributeLabel($attribute)]));

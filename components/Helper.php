@@ -57,7 +57,7 @@ class Helper extends Component
         return implode(",", $arr);
     }
 
-    public function normalizeEmail($email)
+    public static function normalizeEmail($email)
     {
         $email = explode('@', $email);
         $email[0] = str_replace('.', '', $email[0]);
