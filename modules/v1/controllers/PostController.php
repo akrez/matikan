@@ -52,8 +52,8 @@ class PostController extends Controller
             'sortAttributes' => [
                 '-id' => 'شناسه (نزولی)',
                 'id' => 'شناسه (صعودی)',
-                '-created_at' => 'جدید‌ترین',
-                'created_at' => 'قدیمی‌ترین',
+                '-createdAt' => 'جدید‌ترین',
+                'createdAt' => 'قدیمی‌ترین',
                 '-title' => 'عنوان (نزولی)',
                 'title' => 'عنوان (صعودی)',
             ],

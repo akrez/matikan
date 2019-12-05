@@ -14,8 +14,8 @@ use yii\web\IdentityInterface;
  * This is the model class for table "user".
  *
  * @property int $id
- * @property string $updated_at
- * @property string $created_at
+ * @property string $updatedAt
+ * @property string $createdAt
  * @property string $status
  * @property string $birthdate
  * @property string $province
@@ -26,8 +26,8 @@ use yii\web\IdentityInterface;
  * @property string $avatar
  * @property string $gender
  * @property string $name
- * @property string $reset_at
- * @property string $reset_token
+ * @property string $resetAt
+ * @property string $resetToken
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -72,7 +72,7 @@ class User extends ActiveRecord implements IdentityInterface
             [['email'], 'email', 'on' => 'resetPassword'],
             [['password'], 'required', 'on' => 'resetPassword'],
             [['password'], 'minLenValidation', 'params' => ['min' => 6], 'on' => 'resetPassword'],
-            [['reset_token'], 'required', 'on' => 'resetPassword'],
+            [['resetToken'], 'required', 'on' => 'resetPassword'],
             //profile
             [['birthdate'], 'birthdateValidation', 'on' => 'profile'],
             [['name'], 'match', 'pattern' => '/^[\x{0590}-\x{05ff}\x{0600}-\x{06ff} a-z A-Z]{3,31}$/u', 'on' => 'profile'],
@@ -200,10 +200,10 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function setResetToken()
     {
-        if (empty($this->reset_token) || time() - self::TIMEOUT_RESET > $this->reset_at) {
-            $this->reset_token = self::generateResetToken();
+        if (empty($this->resetToken) || time() - self::TIMEOUT_RESET > $this->resetAt) {
+            $this->resetToken = self::generateResetToken();
         }
-        $this->reset_at = time();
+        $this->resetAt = time();
     }
 
     public static function findValidUserByEmail($email)
@@ -213,14 +213,14 @@ class User extends ActiveRecord implements IdentityInterface
 
     public static function findValidUserByEmailResetToken($email, $resetToken)
     {
-        return self::find()->where(['status' => [Status::STATUS_UNVERIFIED, self::STATUS_ACTIVE, Status::STATUS_DISABLE]])->andWhere(['email' => $email])->andWhere(['reset_token' => $resetToken])->andWhere(['>', 'reset_at', time() - self::TIMEOUT])->one();
+        return self::find()->where(['status' => [Status::STATUS_UNVERIFIED, self::STATUS_ACTIVE, Status::STATUS_DISABLE]])->andWhere(['email' => $email])->andWhere(['resetToken' => $resetToken])->andWhere(['>', 'resetAt', time() - self::TIMEOUT])->one();
     }
 
     public function generateResetToken()
     {
         do {
             $rand = rand(10000, 99999);
-            $model = self::find()->where(['reset_token' => $rand])->one();
+            $model = self::find()->where(['resetToken' => $rand])->one();
         } while ($model != null);
         return $rand;
     }
@@ -316,8 +316,8 @@ class User extends ActiveRecord implements IdentityInterface
             $resetPassword->load($input, '');
             if ($resetPassword->validate()) {
                 $user = $resetPassword->getUser();
-                $user->reset_token = null;
-                $user->reset_at = null;
+                $user->resetToken = null;
+                $user->resetAt = null;
                 $user->status = Status::STATUS_ACTIVE;
                 $user->setPasswordHash($resetPassword->password);
                 if ($user->save(false)) {

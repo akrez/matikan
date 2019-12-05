@@ -15,8 +15,8 @@ use yii\imagine\Image;
  * This is the model class for table "post".
  *
  * @property int $id
- * @property string $updated_at
- * @property string $created_at
+ * @property string $updatedAt
+ * @property string $createdAt
  * @property string $title
  * @property string $isbn
  * @property int $price
@@ -24,10 +24,10 @@ use yii\imagine\Image;
  * @property string $publishers
  * @property string $writers
  * @property string $translators
- * @property int $publisher_year
+ * @property int $publisherYear
  * @property int $part
  * @property string $cover
- * @property int $user_id
+ * @property int $userId
  *
  * @property User $user
  */
@@ -44,10 +44,10 @@ class Post extends ActiveRecord
     public function rules()
     {
         return [
-            [['title', 'isbn', 'price', 'province', '!user_id'], 'required'],
+            [['title', 'isbn', 'price', 'province', '!userId'], 'required'],
             [['price'], 'integer', 'min' => -1],
             [['part'], 'integer', 'min' => 1],
-            [['publisher_year'], 'integer', 'min' => 1357, 'max' => jdf::jdate('Y')],
+            [['publisherYear'], 'integer', 'min' => 1357, 'max' => jdf::jdate('Y')],
             [['title', 'publishers', 'writers', 'translators'], 'string', 'max' => 512],
             [['isbn'], 'match', 'pattern' => "/^[0-9]{1,1}[0-9x\-]{8,11}[0-9]{1,1}$/u"],
             [['province'], 'in', 'range' => array_keys(Province::getList())],
@@ -64,7 +64,7 @@ class Post extends ActiveRecord
         $this->publishers = Helper::normalizeArray($this->publishers);
         $this->writers = Helper::normalizeArray($this->writers);
         $this->translators = Helper::normalizeArray($this->translators);
-        $this->user_id = Yii::$app->user->getId();
+        $this->userId = Yii::$app->user->getId();
         return true;
     }
 
@@ -94,12 +94,12 @@ class Post extends ActiveRecord
 
     private static function findOwn($userId)
     {
-        return Post::find()->where(['user_id' => $userId]);
+        return Post::find()->where(['userId' => $userId]);
     }
 
     public function getUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
+        return $this->hasOne(User::className(), ['id' => 'userId']);
     }
 
 }

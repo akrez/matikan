@@ -9,6 +9,6 @@ use yii\helpers\Html;
         <?= Html::encode($name) ?>
     </p>
     <p>
-        <?= $label ?> <br> <?= $reset_token ?>
+        <?= $label ?> <br> <?= $resetToken ?>
     </p>
 </div>

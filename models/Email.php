@@ -27,8 +27,8 @@ class Email extends Model
     {
         return self::send(self::EMAIL_INFO, $user->email, 'درخواست تغییر رمزعبور', 'resetPasswordRequest', [
             'name' => $user->name,
-            'label' => $user->getAttributeLabel('reset_token'),
-            'reset_token' => $user->reset_token,
+            'label' => $user->getAttributeLabel('resetToken'),
+            'resetToken' => $user->resetToken,
         ]);
     }
 }

@@ -14,12 +14,12 @@ class ActiveRecord extends BaseActiveRecord
         }
         $now = Jdf::jdate('Y-m-d H:i:s');
         if ($this->isNewRecord) {
-            if ($this->hasAttribute('created_at')) {
-                $this->created_at = $now;
+            if ($this->hasAttribute('createdAt')) {
+                $this->createdAt = $now;
             }
         }
-        if ($this->hasAttribute('updated_at')) {
-            $this->updated_at = $now;
+        if ($this->hasAttribute('updatedAt')) {
+            $this->updatedAt = $now;
         }
         return true;
     }
