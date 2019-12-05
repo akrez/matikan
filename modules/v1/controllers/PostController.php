@@ -4,7 +4,6 @@ namespace app\modules\v1\controllers;
 
 use app\components\SingleSort;
 use app\controllers\Controller;
-use app\models\Status;
 use Yii;
 use yii\data\Pagination;
 use yii\web\NotFoundHttpException;
@@ -40,10 +39,12 @@ class PostController extends Controller
 
     public function actionIndex()
     {
+        $userId = Yii::$app->user->getId();
+
         $page = Yii::$app->request->get('page');
         $sort = Yii::$app->request->get('sort');
 
-        $query = self::findQuery();
+        $query = Post::findOwn($userId);
         $countOfResults = $query->count('id');
 
         $singleSort = new SingleSort([
@@ -118,26 +119,10 @@ class PostController extends Controller
         return ['status' => boolval($model->delete())];
     }
 
-    public function response($model)
-    {
-        return [
-            'status' => boolval(!$model->hasErrors()),
-            'post' => $model->toArray(),
-            'errors' => $model->getErrors(),
-        ];
-    }
-
-    private static function findQuery()
-    {
-        return Post::find()->where('AND', [
-                    'user_id' => Yii::$app->user->getId(),
-                    'status' => [Status::STATUS_UNVERIFIED, Status::STATUS_ACTIVE, Status::STATUS_DISABLE, Status::STATUS_DELETED],
-        ]);
-    }
-
     private function findOne($id)
     {
-        $model = self::findQuery()->andWhere(['id' => $id])->one();
+        $userId = Yii::$app->user->getId();
+        $model = Post::findOwn($userId)->andWhere(['id' => $id])->one();
         if ($model) {
             return $model;
         }
@@ -149,6 +134,15 @@ class PostController extends Controller
         $model->load(Yii::$app->request->post(), '');
         $model->image = UploadedFile::getInstanceByName('image');
         $model->save();
+    }
+
+    public function response($model)
+    {
+        return [
+            'status' => boolval(!$model->hasErrors()),
+            'post' => $model->toArray(),
+            'errors' => $model->getErrors(),
+        ];
     }
 
 }

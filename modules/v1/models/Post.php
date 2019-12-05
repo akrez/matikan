@@ -1,11 +1,11 @@
 <?php
+
 namespace app\modules\v1\models;
 
 use app\components\Helper;
 use app\components\jdf;
 use app\models\ActiveRecord;
 use app\models\Province;
-use app\models\Status;
 use app\models\User;
 use Yii;
 use yii\httpclient\Exception;
@@ -17,7 +17,6 @@ use yii\imagine\Image;
  * @property int $id
  * @property string $updated_at
  * @property string $created_at
- * @property string $status
  * @property string $title
  * @property string $isbn
  * @property int $price
@@ -34,6 +33,7 @@ use yii\imagine\Image;
  */
 class Post extends ActiveRecord
 {
+
     public $image;
 
     public static function tableName()
@@ -44,11 +44,10 @@ class Post extends ActiveRecord
     public function rules()
     {
         return [
-            [['status', 'title', 'isbn', 'price', 'province', '!user_id'], 'required'],
+            [['title', 'isbn', 'price', 'province', '!user_id'], 'required'],
             [['price'], 'integer', 'min' => -1],
             [['part'], 'integer', 'min' => 1],
             [['publisher_year'], 'integer', 'min' => 1357, 'max' => jdf::jdate('Y')],
-            [['status'], 'in', 'range' => [Status::STATUS_UNVERIFIED, Status::STATUS_ACTIVE, Status::STATUS_DISABLE]],
             [['title', 'publishers', 'writers', 'translators'], 'string', 'max' => 512],
             [['isbn'], 'match', 'pattern' => "/^[0-9]{1,1}[0-9x\-]{8,11}[0-9]{1,1}$/u"],
             [['province'], 'in', 'range' => array_keys(Province::getList())],
@@ -93,8 +92,14 @@ class Post extends ActiveRecord
         }
     }
 
+    private static function findOwn($userId)
+    {
+        return Post::find()->where(['user_id' => $userId]);
+    }
+
     public function getUser()
     {
         return $this->hasOne(User::className(), ['id' => 'user_id']);
     }
+
 }
