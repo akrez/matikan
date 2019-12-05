@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 20, 2019 at 11:21 PM
+-- Generation Time: Dec 05, 2019 at 04:51 PM
 -- Server version: 10.1.34-MariaDB
 -- PHP Version: 7.2.7
 
@@ -30,20 +30,19 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `post` (
   `id` int(11) NOT NULL,
-  `updated_at` varchar(19) DEFAULT NULL,
-  `created_at` varchar(19) DEFAULT NULL,
-  `status` int(1) UNSIGNED NOT NULL,
+  `updatedAt` varchar(19) DEFAULT NULL,
+  `createdAt` varchar(19) DEFAULT NULL,
   `title` varchar(512) NOT NULL,
   `isbn` varchar(21) NOT NULL,
   `price` int(11) NOT NULL,
-  `province` int(4) NOT NULL,
+  `province` varchar(31) NOT NULL,
   `publishers` varchar(512) DEFAULT NULL,
   `writers` varchar(512) DEFAULT NULL,
   `translators` varchar(512) DEFAULT NULL,
-  `publisher_year` int(11) DEFAULT NULL,
+  `publisherYear` int(11) DEFAULT NULL,
   `part` int(4) DEFAULT NULL,
   `cover` varchar(16) DEFAULT NULL,
-  `user_id` int(11) NOT NULL
+  `userId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -54,20 +53,20 @@ CREATE TABLE `post` (
 
 CREATE TABLE `user` (
   `id` int(11) NOT NULL,
-  `updated_at` varchar(19) CHARACTER SET utf8 DEFAULT NULL,
-  `created_at` varchar(19) CHARACTER SET utf8 DEFAULT NULL,
+  `updatedAt` varchar(19) CHARACTER SET utf8 DEFAULT NULL,
+  `createdAt` varchar(19) CHARACTER SET utf8 DEFAULT NULL,
   `status` int(1) UNSIGNED NOT NULL,
   `username` varchar(16) CHARACTER SET utf8 NOT NULL,
   `email` varchar(255) CHARACTER SET utf8 NOT NULL,
-  `password_hash` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `passwordHash` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `token` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
   `name` varchar(31) CHARACTER SET utf8 DEFAULT NULL,
   `province` int(7) UNSIGNED DEFAULT NULL,
   `birthdate` varchar(10) CHARACTER SET utf8 DEFAULT NULL,
   `avatar` varchar(16) CHARACTER SET utf8 DEFAULT NULL,
   `gender` varchar(1) CHARACTER SET utf8 DEFAULT NULL,
-  `reset_at` int(11) UNSIGNED DEFAULT NULL,
-  `reset_token` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL
+  `resetAt` int(11) UNSIGNED DEFAULT NULL,
+  `resetToken` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -79,7 +78,7 @@ CREATE TABLE `user` (
 --
 ALTER TABLE `post`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`);
+  ADD KEY `userId` (`userId`);
 
 --
 -- Indexes for table `user`
@@ -88,7 +87,7 @@ ALTER TABLE `user`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `username` (`username`),
   ADD UNIQUE KEY `email` (`email`),
-  ADD UNIQUE KEY `reset_token` (`reset_token`);
+  ADD UNIQUE KEY `resetToken` (`resetToken`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -114,7 +113,7 @@ ALTER TABLE `user`
 -- Constraints for table `post`
 --
 ALTER TABLE `post`
-  ADD CONSTRAINT `post_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `post_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `user` (`id`) ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
