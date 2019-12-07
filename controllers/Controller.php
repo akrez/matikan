@@ -9,7 +9,7 @@ use yii\web\ForbiddenHttpException;
 class Controller extends BaseController
 {
 
-    const tokenParam = 'token';
+    const tokenParam = '_token';
 
     public static function defaultBehaviors($rules = [])
     {

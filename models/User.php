@@ -20,7 +20,7 @@ use yii\web\IdentityInterface;
  * @property string $birthdate
  * @property string $province
  * @property string $token
- * @property string $password_hash
+ * @property string $passwordHash
  * @property string $username
  * @property string $email
  * @property string $avatar
@@ -190,7 +190,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function setPasswordHash($password)
     {
-        $this->password_hash = Yii::$app->security->generatePasswordHash($password);
+        $this->passwordHash = Yii::$app->security->generatePasswordHash($password);
     }
 
     public function setAuthKey()
@@ -227,7 +227,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function validatePassword($password)
     {
-        return Yii::$app->security->validatePassword($password, $this->password_hash);
+        return Yii::$app->security->validatePassword($password, $this->passwordHash);
     }
 
     public function getUser()
