@@ -36,8 +36,9 @@ class UserController extends Controller
 
     public function response($model, $includeToken = false)
     {
-        return [
+        $result = [
             'status' => !$model->hasErrors(),
+            'errors' => $model->errors,
             'user' => [
                 'id' => $model->id,
                 'updatedAt' => $model->updatedAt,
@@ -52,10 +53,12 @@ class UserController extends Controller
                 'birthdate' => $model->birthdate,
                 'avatar' => $model->avatar,
                 'gender' => $model->gender,
-                'token' => ($includeToken ? $model->token : null),
             ],
-            'errors' => $model->errors,
         ];
+        if ($includeToken) {
+            $result['user']['token'] = $model->token;
+        }
+        return $result;
     }
 
     public function actionSignin()
@@ -89,7 +92,10 @@ class UserController extends Controller
         if ($signup == null) {
             throw new BadRequestHttpException();
         }
-        return $this->response($signup);
+        if ($signup->hasErrors()) {
+            return $this->response($signup);
+        }
+        return $this->response($signup, true);
     }
 
     public function actionResetPasswordRequest()

@@ -75,10 +75,11 @@ class User extends ActiveRecord implements IdentityInterface
             [['resetToken'], 'required', 'on' => 'resetPassword'],
             //profile
             [['birthdate'], 'birthdateValidation', 'on' => 'profile'],
+            [['birthdate'], 'match', 'pattern' => '/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/'],
             [['name'], 'match', 'pattern' => '/^[\x{0590}-\x{05ff}\x{0600}-\x{06ff} a-z A-Z]{3,31}$/u', 'on' => 'profile'],
             [['gender'], 'in', 'range' => array_keys(Gender::getList()), 'on' => 'profile'],
             [['province'], 'in', 'range' => array_keys(Province::getList()), 'on' => 'profile'],
-            [['image'], 'file', 'extensions' => ['jpg', 'png'], 'maxSize' => 1048576, 'mimeTypes' => ['image/jpeg', 'image/png'], 'on' => 'profile'],
+            [['image'], 'file', 'maxSize' => 1048576, 'mimeTypes' => ['image/jpeg', 'image/png'], 'on' => 'profile'],
             [['image'], 'uploadAvatarValidation', 'skipOnError' => true, 'on' => 'profile'],
         ];
     }
@@ -101,7 +102,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        return static::find()->where('BINARY `token` in(:token)', ['token'=> $token])->andWhere(['status' => [Status::STATUS_UNVERIFIED, Status::STATUS_ACTIVE, Status::STATUS_DISABLE]])->one();
+        return static::find()->where('BINARY `token` in(:token)', ['token' => $token])->andWhere(['status' => [Status::STATUS_UNVERIFIED, Status::STATUS_ACTIVE, Status::STATUS_DISABLE]])->one();
     }
 
     public function getId()
@@ -158,14 +159,15 @@ class User extends ActiveRecord implements IdentityInterface
     public function uploadAvatarValidation($attribute, $params, $validator)
     {
         try {
-            $ext = explode('/', $this->image->type);
+            $imageSize = getimagesize($this->$attribute->tempName);
+            $ext = explode('/', $imageSize['mime']);
             $desFile = Yii::getAlias('@webroot') . DIRECTORY_SEPARATOR . 'gallery' . DIRECTORY_SEPARATOR . 'avatar';
             do {
                 $name = substr(uniqid(rand(), true), 0, 11) . '.' . $ext[1];
             } while (file_exists($desFile . DIRECTORY_SEPARATOR . $name));
             $desFile = $desFile . DIRECTORY_SEPARATOR . $name;
             $image = Image::getImagine()->open($this->image->tempName);
-            Image::resize($image, 300, 300, false, true)->save($desFile, ['quality' => 100]);
+            Image::resize($image, $imageSize[0], $imageSize[1], false, true)->save($desFile, ['quality' => 100]);
             $this->avatar = $name;
         } catch (Exception $ex) {
             $this->avatar = null;
