@@ -51,7 +51,7 @@ class Post extends ActiveRecord
             [['title', 'publishers', 'writers', 'translators'], 'string', 'max' => 512],
             [['isbn'], 'match', 'pattern' => "/^[0-9]{1,1}[0-9x\-]{8,11}[0-9]{1,1}$/u"],
             [['province'], 'in', 'range' => array_keys(Province::getList())],
-            [['image'], 'file', 'extensions' => ['jpg', 'png'], 'maxSize' => 1024 * 1024, 'mimeTypes' => ['image/jpeg', 'image/png']],
+            [['image'], 'file', 'maxSize' => 1024 * 1024, 'mimeTypes' => ['image/jpeg', 'image/png']],
             [['image'], 'uploadCoverValidation', 'skipOnError' => true],
         ];
     }
@@ -92,7 +92,7 @@ class Post extends ActiveRecord
         }
     }
 
-    private static function findOwn($userId)
+    public static function findOwn($userId)
     {
         return Post::find()->where(['userId' => $userId]);
     }
