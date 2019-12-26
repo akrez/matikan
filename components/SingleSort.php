@@ -6,6 +6,7 @@ use yii\base\Component;
 
 class SingleSort extends Component
 {
+
     public $sort;
     //
     public $defaultSort;

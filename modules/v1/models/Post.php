@@ -71,21 +71,21 @@ class Post extends ActiveRecord
     public function uploadCoverValidation($attribute, $params, $validator)
     {
         try {
-            $imageSize = getimagesize($this->image->tempName);
-            if ($imageSize[0] > $imageSize[1] && (3 < $imageSize[0] / $imageSize[1])) {
+            $imageSize = getimagesize($this->$attribute->tempName);
+            if ($imageSize[0] > $imageSize[1] && (2 < $imageSize[0] / $imageSize[1])) {
                 return $this->addError($attribute, 'نسبت عرض به طول عکس نباید بیشتر از 3 برابر باشد.');
-            } elseif ($imageSize[1] > $imageSize[0] && (3 < $imageSize[1] / $imageSize[0])) {
+            } elseif ($imageSize[1] > $imageSize[0] && (2 < $imageSize[1] / $imageSize[0])) {
                 return $this->addError($attribute, 'نسبت طول به عرض عکس نباید بیشتر از 3 برابر باشد.');
             }
 
-            $ext = explode('/', $this->image->type);
+            $ext = explode('/', $imageSize['mime']);
             $desFile = Yii::getAlias('@webroot') . DIRECTORY_SEPARATOR . 'gallery' . DIRECTORY_SEPARATOR . 'cover';
             do {
                 $name = substr(uniqid(rand(), true), 0, 11) . '.' . $ext[1];
             } while (file_exists($desFile . DIRECTORY_SEPARATOR . $name));
             $desFile = $desFile . DIRECTORY_SEPARATOR . $name;
-            $image = Image::getImagine()->open($this->image->tempName);
-            Image::resize($image, 300, 300, false, true)->save($desFile, ['quality' => 100]);
+            $image = Image::getImagine()->open($this->$attribute->tempName);
+            Image::resize($image, $imageSize[0], $imageSize[1], false, true)->save($desFile, ['quality' => 100]);
             $this->cover = $name;
         } catch (Exception $ex) {
             $this->cover = null;

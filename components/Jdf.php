@@ -14,6 +14,7 @@ namespace app\components;
 class Jdf
 {
     /*    F    */
+
     public static function jdate($format, $timestamp = '', $none = '', $time_zone = 'Asia/Tehran', $tr_num = 'en')
     {
         $T_sec = 0; /* <= رفع خطاي زمان سرور ، با اعداد '+' و '-' بر حسب ثانيه */
@@ -663,7 +664,7 @@ class Jdf
         $gy += 400 * ((int) ($days / 146097));
         $days %= 146097;
         if ($days > 36524) {
-            $gy += 100 * ((int) (--$days / 36524));
+            $gy += 100 * ((int) ( --$days / 36524));
             $days %= 36524;
             if ($days >= 365) {
                 $days++;
@@ -676,7 +677,7 @@ class Jdf
             $days = ($days - 1) % 365;
         }
         $gd = $days + 1;
-        foreach (array(0, 31, ((($gy % 4 == 0) and ($gy % 100 != 0)) or ($gy % 400 == 0)) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31) as $gm => $v) {
+        foreach (array(0, 31, ((($gy % 4 == 0) and ( $gy % 100 != 0)) or ( $gy % 400 == 0)) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31) as $gm => $v) {
             if ($gd <= $v) {
                 break;
             }
@@ -684,6 +685,7 @@ class Jdf
         }
         return($mod === '') ? array($gy, $gm, $gd) : $gy . $mod . $gm . $mod . $gd;
     }
+
 }
 
 /* [ jdf.php ] version 2.55 ?> Download new version from [ http://jdf.scr.ir ] */

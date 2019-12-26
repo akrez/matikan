@@ -7,6 +7,7 @@ use yii\db\ActiveRecord as BaseActiveRecord;
 
 class ActiveRecord extends BaseActiveRecord
 {
+
     public function beforeSave($insert)
     {
         if (!parent::beforeSave($insert)) {
@@ -28,4 +29,5 @@ class ActiveRecord extends BaseActiveRecord
     {
         return Model::attributeLabelsList();
     }
+
 }

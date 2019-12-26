@@ -50,8 +50,6 @@ class PostController extends Controller
         $singleSort = new SingleSort([
             'sort' => $sort,
             'sortAttributes' => [
-                '-id' => 'شناسه (نزولی)',
-                'id' => 'شناسه (صعودی)',
                 '-createdAt' => 'جدید‌ترین',
                 'createdAt' => 'قدیمی‌ترین',
                 '-title' => 'عنوان (نزولی)',

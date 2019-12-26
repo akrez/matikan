@@ -13,24 +13,24 @@ class UserController extends Controller
     public function behaviors()
     {
         return self::defaultBehaviors([
-            [
-                'actions' => ['signup', 'signin', 'reset-password-request', 'reset-password'],
-                'allow' => true,
-                'verbs' => ['POST'],
-                'roles' => ['?'],
-            ],
-            [
-                'actions' => ['profile'],
-                'allow' => true,
-                'verbs' => ['POST'],
-                'roles' => ['@'],
-            ],
-            [
-                'actions' => ['info', 'signout'],
-                'allow' => true,
-                'verbs' => ['GET'],
-                'roles' => ['@'],
-            ],
+                    [
+                        'actions' => ['signup', 'signin', 'reset-password-request', 'reset-password'],
+                        'allow' => true,
+                        'verbs' => ['POST'],
+                        'roles' => ['?'],
+                    ],
+                    [
+                        'actions' => ['profile'],
+                        'allow' => true,
+                        'verbs' => ['POST'],
+                        'roles' => ['@'],
+                    ],
+                    [
+                        'actions' => ['info', 'signout'],
+                        'allow' => true,
+                        'verbs' => ['GET'],
+                        'roles' => ['@'],
+                    ],
         ]);
     }
 

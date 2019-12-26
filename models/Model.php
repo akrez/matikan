@@ -1,10 +1,12 @@
 <?php
+
 namespace app\models;
 
 use yii\base\Model as BaseModel;
 
 class Model extends BaseModel
 {
+
     public function attributeLabels()
     {
         return static::attributeLabelsList();
@@ -41,4 +43,5 @@ class Model extends BaseModel
             'publisherYear' => 'سال انتشار',
         ];
     }
+
 }

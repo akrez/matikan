@@ -6,6 +6,7 @@ use Yii;
 
 class Email extends Model
 {
+
     const EMAIL_INFO = 'akrez.like@gmail.com';
 
     private static function send($from, $to, $subject, $view, $params)
@@ -26,9 +27,10 @@ class Email extends Model
     public static function resetPasswordRequest($user)
     {
         return self::send(self::EMAIL_INFO, $user->email, 'درخواست تغییر رمزعبور', 'resetPasswordRequest', [
-            'name' => $user->name,
-            'label' => $user->getAttributeLabel('resetToken'),
-            'resetToken' => $user->resetToken,
+                    'name' => $user->name,
+                    'label' => $user->getAttributeLabel('resetToken'),
+                    'resetToken' => $user->resetToken,
         ]);
     }
+
 }

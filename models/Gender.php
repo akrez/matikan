@@ -4,6 +4,7 @@ namespace app\models;
 
 class Gender extends Model
 {
+
     const GENDER_MALE = 'm';
     const GENDER_FEMALE = 'f';
 
@@ -20,4 +21,5 @@ class Gender extends Model
         $list = self::statuses();
         return (isset($list[$item]) ? $list[$item] : null);
     }
+
 }
